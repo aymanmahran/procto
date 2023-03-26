@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-procto-staging-54706-authRole",
+      "UnauthRoleArn": "arn:aws:iam::554343211545:role/amplify-procto-staging-54706-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::554343211545:role/amplify-procto-staging-54706-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-procto-staging-54706-deployment",
+      "UnauthRoleName": "amplify-procto-staging-54706-unauthRole",
+      "StackName": "amplify-procto-staging-54706",
+      "StackId": "arn:aws:cloudformation:us-east-2:554343211545:stack/amplify-procto-staging-54706/7bcce120-c619-11ed-9c61-06c9722b62f4",
+      "AmplifyAppId": "ds6ppbpmod1r6"
+    },
+    "categories": {
+      "auth": {
+        "Procto": {}
+      }
+    }
+  }
+}

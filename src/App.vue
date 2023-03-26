@@ -1,30 +1,42 @@
+<script setup>
+  import { Authenticator, useAuthenticator } from "@aws-amplify/ui-vue";
+  import "@aws-amplify/ui-vue/styles.css";
+  import { Amplify } from "aws-amplify";
+  import awsconfig from "./aws-exports";
+
+  Amplify.configure(awsconfig);
+  const auth = useAuthenticator();
+
+</script>
+
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view />
+  <authenticator>
+    <template v-slot="{ user }">
+      <!-- <h1>Hello {{ user.username }}!</h1> -->
+        <router-view :auth="auth" :user="user" ></router-view>
+      <!-- <button @click="auth.signOut">Sign Out</button> -->
+    </template>
+  </authenticator>
+  <!-- <router-view /> -->
+
 </template>
+
+<script>
+
+</script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  font-family:Ubuntu;
   color: #2c3e50;
+  height: 100%;
+  width:100%;
 }
 
-nav {
-  padding: 30px;
+html, body {
+  margin:0;
+  padding:0;
+  height:100%;
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
