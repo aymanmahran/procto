@@ -1,39 +1,42 @@
 <template>
     <div class="sidebar">
       <div class="top-rect">
-        
-        <div class="title">Hello, {{ name }}</div>
+        <img class="user-img" src="../../assets/user.jpg">
+        <div class="title">Hello, {{ name.slice(0, 5) }}</div>
       </div>
-      <div class="questions-list">
-        <QuestionEntry @goTo="goTo" v-for="question in questions" :key="question" :questionNumber="question"></QuestionEntry>
+      <div class="course-list">
+        <CourseItem v-for="course in courses" :key="course" :courseName="course" @selectCourse="selectCourse"></CourseItem>
       </div>
-      <div class="button" @click="$emit('submit')">Submit</div>
+
+
+      <div style="margin:auto">
+        <div class="button" @click="$emit('logout')">Logout</div>
+        <div style="padding-top:20px;"> Copyright &copy; 2023</div>
+        <div style="text-align: center; padding:10px"> Procto</div>
+      </div>
 
     </div>
   </template>
   
   <script>
-  import QuestionEntry from './QuestionEntry.vue';
+  import CourseItem from './CourseItem.vue';
   
   export default {
-    name: "AssessmentSideBar",
+    name: "SideBar",
     props: {
       name: {
         type: String,
       },
-      questions: {
+      courses: {
         type: Array,
       }
     },
     components: {
-      QuestionEntry
+      CourseItem
     },
     methods: {
-      submit() {
-        this.$emit('submit');
-      },
-      goTo(number) {
-        this.$emit('goTo', number);
+      selectCourse (courseName) {
+        this.$emit('selectCourse', courseName);
       }
     }
   }
@@ -41,6 +44,10 @@
   
   <style scoped>
   .sidebar {
+    /* width: 200px;
+    height: 100%;
+    padding: 20px; */
+    
     display: flex;
     flex-direction: column;
     background-color: #7a0000;
@@ -72,11 +79,28 @@
     justify-content:center;
   }
   
+  .user-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-left: 30px;
+  }
+
+  .course-list {
+    /* display: flex; */
+    /* align-items: center;
+    justify-content: center; */
+    /* margin: 20px; */
+    height: calc(100% - 70px);
+    margin-top: 50px;
+  }
+
   .button {
     display: flex;
     min-height: 40px;
     font-size: 14px;
-    width: calc(100% - 50px);
+    width: 70px;
     color: rgb(218, 218, 218);
     border-radius: 7px;
     background-color:#330000;
@@ -85,16 +109,10 @@
     cursor: pointer;
     transition: all .15s ease-in;
     margin: 0 auto;
-    margin-bottom: 20px;
   }
 
   .button:hover { 
       background: #953333;
-  }
-
-  .questions-list {
-    height: calc(100% - 70px);
-    margin-top: 50px;
   }
 
   </style>

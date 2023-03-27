@@ -8,7 +8,7 @@
 
 <script>
 
-import SimpleQuestion from './SimpleQuestion.vue';
+import SimpleQuestion from '../shared/SimpleQuestion.vue';
 
 export default {
     name: "AssessmentWindow",

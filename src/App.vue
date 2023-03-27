@@ -13,7 +13,9 @@
   <authenticator>
     <template v-slot="{ user }">
       <!-- <h1>Hello {{ user.username }}!</h1> -->
-        <router-view :auth="auth" :user="user" ></router-view>
+        <Suspense>
+          <router-view :auth="auth" :user="user"></router-view>
+        </Suspense>
       <!-- <button @click="auth.signOut">Sign Out</button> -->
     </template>
   </authenticator>

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isStudent" class="home">
+  <div v-if="isStudent" class="home">
     <!-- <img alt="Vue logo" src="../assets/logo.png" />
     <HelloWorld msg="Welcome to Your Vue.js App Student" /> -->
     <div><SideBar :name = "user.username" :courses = "courses" @selectCourse="updateCourseSelection" @logout="logout"/></div>
@@ -12,8 +12,8 @@
         <p> {{ selectedCourse }} </p>
       </div>
       <CourseDetails :titles="tabs" @selectTab="updateTabSelection"/>
-      <CourseStudents title="Students" v-show="selectedTab == 'Students'"/>
-      <CourseAssessments title="Assessments" v-show="selectedTab == 'Assessments'"/>
+      <CourseStudents :course="selectedCourseObject" title="Students" v-show="selectedTab == 'Students'"/>
+      <CourseAssessments :course="selectedCourseObject" title="Assessments" v-show="selectedTab == 'Assessments'"/>
 
   </div>
     <!-- <HelloWorld msg="Welcome to Your Vue.js App Prof" /> -->
@@ -22,17 +22,18 @@
 
 <script>
 // @ is an alias to /src
-import AssessmentList from "@/components/AssessmentList.vue";
-import CourseStudents from "@/components/CourseStudents.vue";
-import CourseAssessments from "@/components/CourseAssessments.vue";
-import CourseDetails from "@/components/CourseDetails.vue";
-import SideBar from "@/components/SideBar.vue";
-import { User } from "procto-api";
+import AssessmentList from "@/components/student/AssessmentList.vue";
+import CourseStudents from "@/components/professor/CourseStudents.vue";
+import CourseAssessments from "@/components/professor/CourseAssessments.vue";
+import CourseDetails from "@/components/professor/CourseDetails.vue";
+import SideBar from "@/components/shared/SideBar.vue";
+import { User, Student, Professor} from "procto-api";
+import { store } from "../store";
+// import { provide } from "vue";
 
 export default {
   name: "HomeView",
   props: {
-    email: String,
     user: Object,
     auth: Object
   },
@@ -45,17 +46,21 @@ export default {
   },
   data() {
     return {
+      userObj: null,
       isStudent: false,
-      courses: ['ECE 5500', 'ECE 5400'],
+      courses: [],
+      courseObjects: [],
       assessments: [],
       tabs: ['Students', 'Assessments'],
       selectedCourse: "",
+      selectedCourseObject: null,
       selectedTab: ""
     }
   },
   methods: {
     updateCourseSelection(courseName) {
       this.selectedCourse = courseName;
+      this.selectedCourseObject = this.courseObjects.filter(course => course.getName() == this.selectedCourse)[0];
       console.log(this.selectedCourse);
       var assessments = [
         {
@@ -92,9 +97,23 @@ export default {
       this.auth.signOut();
     }
   },
+  async setup(){
+    var user = new User();
+    if (await user.getType() == "student") {
+      store.user = new Student(user);
+      store.user.isStudent = true;
+    }
+    else {
+      store.user = new Professor(user);
+      store.user.isStudent = false;
+    }
+  },
   async created() {
-    var user = new User(this.email)
+    var user = new User();
     this.isStudent = await user.getType() == "student";
+    this.courseObjects = await store.user.getCourses();
+    this.courses = this.courseObjects.map(course => course.getName());
+    console.log(this.courses);
   }
 };
 </script>

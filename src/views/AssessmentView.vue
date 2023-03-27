@@ -14,9 +14,9 @@
 
 <script>
 // @ is an alias to /src
-import AssessmentWindow from "@/components/AssessmentWindow.vue";
-import AssessmentSideBar from "@/components/AssessmentSideBar.vue";
-import TimerWidget from "@/components/TimerWidget.vue";
+import AssessmentWindow from "@/components/student/AssessmentWindow.vue";
+import AssessmentSideBar from "@/components/student/AssessmentSideBar.vue";
+import TimerWidget from "@/components/student/TimerWidget.vue";
 import { Assessment } from "procto-api";
 
 export default {

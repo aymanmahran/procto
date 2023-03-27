@@ -31,6 +31,7 @@ import { useSlots, ref , provide} from 'vue';
         }
     },
     created() {
+        this.$emit('selectTab', 'Students');
         provide('selectedTitle', ref(this.titles[0]));
     }
   }
@@ -48,7 +49,7 @@ import { useSlots, ref , provide} from 'vue';
     display: flex;
     justify-content: space-between;
     gap: 5px;
-    height: 50px;
+    height: 70px;
 }
 .tabs_item {
     flex: 1;
@@ -61,7 +62,8 @@ import { useSlots, ref , provide} from 'vue';
     font-size: 20px;
     font-weight: bold;
     text-align: center;
-    margin-top:5px;
+    display: inline-block;
+    padding-top:20px;
 }
 .tabs_item.selected {
     background-color: #d1d1d1;

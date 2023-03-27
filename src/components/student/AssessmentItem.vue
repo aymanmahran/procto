@@ -11,8 +11,8 @@
           <div style="color: rgb(99, 99, 99) ;font-size: 14px; margin-bottom: 10px;text-align: left;">{{ assessment.date }} at {{ assessment.time }}</div>
         </div>
         <div style="margin: auto;">
-          <img v-if="expanded" @click="expand" src="../assets/collapse.jpg" width="30" height="30"/>
-          <img v-else @click="expand" src="../assets/expand.png" width="30" height="30"/>
+          <img v-if="expanded" @click="expand" src="../../assets/collapse.jpg" width="30" height="30"/>
+          <img v-else @click="expand" src="../../assets/expand.png" width="30" height="30"/>
         </div>
       </div>
       <div v-if="expanded" class="text" style="height: 30px; margin: 20px; margin-top:20; font-style: italic;">
