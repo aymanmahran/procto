@@ -1,30 +1,49 @@
 <template>
-  <div class="assessment-window">
+  <div class="assessment-window" v-if="isStudent">
     <div>
       <div class="timer-box">
       <div style="width: 120px; margin:auto"><TimerWidget :time="time"/></div>
       </div>
-      <AssessmentWindow @updateAnswers="updateAnswers" :questions="questions"/>
+      <TakeAssessmentWindow @updateAnswers="updateAnswers" :questions="questions"/>
     </div>
     <div>
       <AssessmentSideBar @submit="submit" :name="name" :questions="questionsIndex"/>
     </div>
   </div>
+
+  <div class="assessment-window" v-else>
+    <div>
+      <MarkAssessmentWindow @updateAnswers="updateAnswers" :questions="questions"/>
+    </div>
+    <div>
+      <AssessmentSideBar @submit="submit" :name="name" :questions="questionsIndex"/>
+    </div>
+  </div>
+
 </template>
 
 <script>
 // @ is an alias to /src
-import AssessmentWindow from "@/components/student/AssessmentWindow.vue";
+import TakeAssessmentWindow from "@/components/student/TakeAssessmentWindow.vue";
+import MarkAssessmentWindow from "@/components/student/MarkAssessmentWindow.vue";
 import AssessmentSideBar from "@/components/student/AssessmentSideBar.vue";
 import TimerWidget from "@/components/student/TimerWidget.vue";
 import { Assessment } from "procto-api";
+import { store } from '../store';
 
 export default {
   name: "AssessmentView",
   props: {
+    assessment: {
+      type: String
+    },
+    student: {
+      type: String
+    }
   },
   components: {
-    AssessmentWindow,
+    TakeAssessmentWindow,
+    MarkAssessmentWindow,
     AssessmentSideBar,
     TimerWidget
   },
@@ -34,10 +53,12 @@ export default {
       questionsIndex: [],
       name: "",
       time: "",
-      answers: []
+      answers: [],
+      isStudent: true
     }
   },
   async created() {
+      this.isStudent = store.isStudent;
       var assessment = new Assessment(this.id);
       this.time = await assessment.getDuration();
       console.log(this.time);

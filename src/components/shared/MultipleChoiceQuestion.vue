@@ -15,6 +15,12 @@
             },
             number: {
                 type: String
+            },
+            mutable: {
+                type: Boolean
+            },
+            answer: {
+                type: String
             }
         }
     }

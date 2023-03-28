@@ -1,7 +1,7 @@
 <template>
     <div style="margin: 40px">
         <div v-for="question in questions" :key="question.number">
-            <SimpleQuestion @update="update" :questionProps="question"/>
+            <SimpleQuestion :mutable="true" @update="update" :questionProps="question"/>
         </div>
     </div>
 </template>
@@ -11,7 +11,7 @@
 import SimpleQuestion from '../shared/SimpleQuestion.vue';
 
 export default {
-    name: "AssessmentWindow",
+    name: "TakeAssessmentWindow",
     props: {
         questions: {
             type: Array

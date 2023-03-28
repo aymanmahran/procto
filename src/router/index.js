@@ -13,6 +13,11 @@ const routes = [
     name: "assessment",
     component: AssessmentView
   },
+  {
+    path: "/view-assessment",
+    name: "viewassessment",
+    component: AssessmentView
+  }
 ];
 
 const router = createRouter({

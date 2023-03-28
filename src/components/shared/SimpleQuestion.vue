@@ -2,8 +2,8 @@
     <div :id="questionProps.number" :v-el="questionProps.number" style="margin-bottom: 50px;">
         <h2> {{ `Question ${questionProps.number}` }}</h2>
         <p style="font-size:20px"> {{ questionProps.prompt }}</p>
-        <LongAnswerQuestion @update="update" :number="questionProps.number" v-if="questionProps.type === 'long-answer'"/>
-        <MultipleChoiceQuestion :options="questionProps.options" :number="questionProps.number" v-else-if="questionProps.type === 'multiple-choice'"/>
+        <LongAnswerQuestion @update="update" :number="questionProps.number" :mutable="mutable" :answer="questionProps.answer" v-if="questionProps.type === 'long-answer'"/>
+        <MultipleChoiceQuestion :options="questionProps.options" :number="questionProps.number" :mutable="mutable" :answer="questionProps.answer" v-else-if="questionProps.type === 'multiple-choice'"/>
 
     </div>
 </template>
@@ -17,6 +17,9 @@
         props: {
             questionProps: {
                 type: Object
+            },
+            mutable: {
+                type: Boolean
             }
         },
         components: {
@@ -27,6 +30,9 @@
             update(number, ans) {
                 this.$emit('update', number, ans);
             }
+        },
+        created() {
+            console.log(this.mutable);
         }
     }
 </script>
