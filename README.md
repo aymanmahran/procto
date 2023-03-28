@@ -5,11 +5,13 @@ Procto is an automated proctoring software for invigilating assessments without 
 ## Structure
 
 The project has main 3 components:
-- Front end web app (uses Vue.js)
+**- Front end web app (uses Vue.js)**
     - Involves the UI, interface components, and the presentation of data to the end user. Written on Vue.js, the interface is divided into views (pages) and reactive components (buttons, bars, boxes,...). The reactivity provided by Vue.js emulates Decorator and Proxy design patterns, where components providing certain functionalities are shown or hidden depending on the actor (student vs professor). 
-- Back end API (procto-api)
+    
+**- Back end API (procto-api)**
     - This is a Typescript package that acts as an interface between the web app and the cloud. It exports classes that supply the app with the needed methods to retrieve and update data. The relations between classes in this package is illustrated by the class diagram provided and explained in the design presentation. Though the concept of interfaces is slightly different in Typescript, the relations and patterns still hold.
-- Cloud infrastructure (on AWS)
+
+**- Cloud infrastructure (on AWS)**
     - The cloud part represents the database and tables used to store information about assessments and grades. It also includes the authentication and verification of users.
 
 ## Progress
@@ -18,7 +20,7 @@ The project has main 3 components:
 
 ## Project setup
 
-**Prerequisite**
+### Prerequisites
 
 - Node.js and NPM (install from [here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
