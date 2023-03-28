@@ -16,7 +16,19 @@ The project has main 3 components:
 
 ## Progress
 
-Below is the work done so far in the project. The first stage mainly focused on implementing the web app interface. The next stage will involve the back-end implementation and functionality.
+Use case diagrams for reference:
+
+- First Iteration
+
+![First](https://user-images.githubusercontent.com/55334062/228271092-32e88402-4b39-4c6d-bb9b-321c08fec8b1.png)
+
+
+- Final Demo
+
+![Final](https://user-images.githubusercontent.com/55334062/228271138-a7077d42-7927-436f-9993-19efb311398b.png)
+
+
+Below is the work done so far in the project. Most of the use cases from the first iteration as well as some of the final demo use cases were covered. The first stage mainly focused on implementing the web app interface. The next stage will involve the back-end implementation and functionality.
 
 - Front-end:
     - Most of the features are implemented, this includes the main views and components
