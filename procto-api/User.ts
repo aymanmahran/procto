@@ -1,10 +1,15 @@
-export default class User {
-    email: any;
+import { userType, Email, Name } from './types';
 
-    constructor(email: any) {
+export default class User {
+    firstname: Name;
+    lastname: Name;
+    email: Email;
+    constructor(firstname: Name, lastname: Name, email: Email) {
+        this.firstname = firstname;
+        this.lastname = lastname;
         this.email = email;
     }
-    async getType() {
-        return "professor";
+    async getType(): Promise<userType> {
+        return Promise.resolve(userType.Professor);
     }
 }

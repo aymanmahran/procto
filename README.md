@@ -49,7 +49,7 @@ Below is the work done so far in the project. Most of the use cases from the fir
 
 ### Prerequisites
 
-- Node.js and NPM (install from [here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- Node.js and NPM (install from [here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm))
 
 - Vue.js CLI (after installing NPM, run `npm install -g @vue/cli`)
 

@@ -27,7 +27,7 @@ import CourseStudents from "@/components/professor/CourseStudents.vue";
 import CourseAssessments from "@/components/professor/CourseAssessments.vue";
 import CourseDetails from "@/components/professor/CourseDetails.vue";
 import SideBar from "@/components/shared/SideBar.vue";
-import { User, Student, Professor} from "procto-api";
+import { User, Student, Professor } from "procto-api";
 import { store } from "../store";
 // import { provide } from "vue";
 
@@ -109,9 +109,10 @@ export default {
     }
   },
   async created() {
-    var user = new User();
+    var user = new User("Ayman", "Mahran", "agazmahran@mun.ca");
     this.isStudent = await user.getType() == "student";
     this.courseObjects = await store.user.getCourses();
+    //console.log(await this.auth.userAttributes(this.user));
     this.courses = this.courseObjects.map(course => course.getName());
     console.log(this.courses);
   }

@@ -1,7 +1,11 @@
-export default class Student {
-    user: any;
-    constructor(user: any) {
-        this.user = user;
+import User from './User';
+import { Name, Email } from './types';
+export default class Student extends User {
+    id: string;
+
+    constructor(user: User, id: string) {
+        super(user.firstname, user.lastname, user.email);
+        this.id = id;
     }
 
     async getCourses() {

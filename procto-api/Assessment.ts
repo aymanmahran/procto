@@ -1,8 +1,9 @@
 export default class Assessment {
-    id: any;
-    constructor(id: any) {
-        this.id = id;
+    props: any;
+    constructor(props: any) {
+        this.props = props;
     }
+
     async getQuestions() {
         return [{
             number: "1",
@@ -40,7 +41,7 @@ export default class Assessment {
         }];
     }
     async getName() {
-        return "Test Assessment 1";
+        return this.props.name;
     }
 
     async getDuration() {

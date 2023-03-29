@@ -59,7 +59,7 @@ export default {
   },
   async created() {
       this.isStudent = store.isStudent;
-      var assessment = new Assessment(this.id);
+      var assessment = new Assessment("Midterm 1");
       this.time = await assessment.getDuration();
       console.log(this.time);
       this.questions = await assessment.getQuestions();
