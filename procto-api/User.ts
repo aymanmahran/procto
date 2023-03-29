@@ -10,6 +10,6 @@ export default class User {
         this.email = email;
     }
     async getType(): Promise<userType> {
-        return Promise.resolve(userType.Professor);
+        return Promise.resolve(userType.Student);
     }
 }

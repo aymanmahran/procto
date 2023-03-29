@@ -2,7 +2,10 @@
     <div class="sidebar">
       <div class="top-rect">
         
-        <div class="title">Hello, {{ name }}</div>
+        <div class="title">Hello, Ayman</div>
+      </div>
+      <div v-if="isStudent" style="width:100%; height: 500px; background-color: #330000;">
+        <div style = "margin-top: 40px;margin-left: 25px; width: calc(100% - 50px); height: 150px; background-color: #000;"></div>
       </div>
       <div class="questions-list">
         <QuestionEntry @goTo="goTo" v-for="question in questions" :key="question" :questionNumber="question"></QuestionEntry>
@@ -14,6 +17,7 @@
   
   <script>
   import QuestionEntry from '../shared/QuestionEntry.vue';
+  import { store } from '../../store';
   
   export default {
     name: "AssessmentSideBar",
@@ -27,6 +31,11 @@
     },
     components: {
       QuestionEntry
+    },
+    date() {
+      return {
+        isStudent: store.isStudent
+      }
     },
     methods: {
       submit() {
