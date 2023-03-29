@@ -75,10 +75,17 @@ npm link procto-api
 npm install
 ```
 
-4. To launch a local server for testing, run serve
+4. To launch a local server for testing, run serve inside the app folder
 ```
 npm run serve
 ```
+
+5. Finally, go to a browser and enter the local server address to view the website
+```
+http://localhost:3000/
+```
+
+The app would automatically update when making changes to the code
 
 ### Production
 
@@ -86,4 +93,4 @@ Follow the same steps as above. To compile and minify the app for production, ru
 ```
 npm run build
 ```
-The output in `dist` folder can then be deployed to any web hosting service (in this case, AWS).
+The output in `dist` folder can then be deployed to any web hosting service (in this case, AWS). The folder can also be uploaded to services like Heroku for fast deployment.
