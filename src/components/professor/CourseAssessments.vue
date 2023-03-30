@@ -42,8 +42,17 @@ export default {
     },
     async created() {
         this.assessments = await this.course.getAssessments();
-        this.assessments.forEach(assessment => this.studentResponses.push(this.course.getStudentResponses(assessment.id)));
-    }
+        //this.assessments.forEach(assessment => this.studentResponses.push(this.course.getStudentResponses(assessment.id)));
+
+        this.assessments = await this.course.getAssessments();
+        this.studentResponses = [];
+        this.assessments.forEach(async (assessment) => {
+          var s = await this.course.getStudentResponses(assessment.id);
+          this.studentResponses.push(s);
+        });
+        console.log(this.studentResponses);
+
+      }
   }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
-    <div class="course-item">
-      <a @click="$emit('selectCourse', courseName)">{{ courseName }}</a>
+    <div @click="$emit('selectCourse', courseName)" class="course-item">
+      <a>{{ courseName }}</a>
     </div>
   </template>
   

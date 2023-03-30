@@ -2,7 +2,7 @@
     <div class="sidebar">
       <div class="top-rect">
         <img class="user-img" src="../../assets/user.jpg">
-        <div class="title">Hello, {{ name.slice(0, 5) }}</div>
+        <div class="title">Hello, Ayman</div>
       </div>
       <div class="course-list">
         <CourseItem v-for="course in courses" :key="course" :courseName="course" @selectCourse="selectCourse"></CourseItem>

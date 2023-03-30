@@ -3,19 +3,20 @@
     <!-- <img alt="Vue logo" src="../assets/logo.png" />
     <HelloWorld msg="Welcome to Your Vue.js App Student" /> -->
     <div><SideBar :name = "user.username" :courses = "courses" @selectCourse="updateCourseSelection" @logout="logout"/></div>
-    <div><AssessmentList :assessments = "assessments"/></div>
+    <div v-if="selectedCourseObject != null"><AssessmentList :assessments = "assessments"/></div>
+    <div v-else style="color: #d1d1d1; margin:20px; margin-left:40px; margin-right:30px;font-size: 24px; font-weight: bold"> Select a course to view assessments information...</div>
   </div>
   <div v-else class="home">
     <div><SideBar :name = "user.username" :courses = "courses" @selectCourse="updateCourseSelection" @logout="logout"/></div>
-    <div style="margin:20px; margin-left:40px; margin-right:30px">
+    <div v-if="selectedCourseObject != null" style="margin:20px; margin-left:40px; margin-right:30px">
       <div class="courseTitle">
         <p> {{ selectedCourse }} </p>
       </div>
       <CourseDetails :titles="tabs" @selectTab="updateTabSelection"/>
       <CourseStudents :course="selectedCourseObject" title="Students" v-show="selectedTab == 'Students'"/>
       <CourseAssessments :course="selectedCourseObject" title="Assessments" v-show="selectedTab == 'Assessments'"/>
-
   </div>
+  <div v-else style="color: #d1d1d1; margin:20px; margin-left:40px; margin-right:30px;font-size: 24px; font-weight: bold"> Select a course to view information...</div>
     <!-- <HelloWorld msg="Welcome to Your Vue.js App Prof" /> -->
   </div>
 </template>
@@ -28,7 +29,8 @@ import CourseAssessments from "@/components/professor/CourseAssessments.vue";
 import CourseDetails from "@/components/professor/CourseDetails.vue";
 import SideBar from "@/components/shared/SideBar.vue";
 import { User, Student, Professor, userType } from "procto-api";
-import { store } from "../store";
+import { useStore } from 'vuex';
+// import { store } from "../store";
 // import { provide } from "vue";
 
 export default {
@@ -60,7 +62,7 @@ export default {
   methods: {
     updateCourseSelection(courseName) {
       this.selectedCourse = courseName;
-      this.selectedCourseObject = this.courseObjects.filter(course => course.getName() == this.selectedCourse)[0];
+      this.selectedCourseObject = this.courseObjects.filter(course => course.getTitle() == this.selectedCourse)[0];
       console.log(this.selectedCourse);
       var assessments = [
         {
@@ -98,22 +100,35 @@ export default {
     }
   },
   async setup(){
-    var user = new User();
+    const store = useStore();
+    var user = new User("Ayman", "Mahran", "agazmahran@mun.ca");
+    console.log(await user.getType());
+    console.log(userType.Student);
     if (await user.getType() == userType.Student) {
-      store.user = new Student(user);
-      store.user.isStudent = true;
+      store.state.user = new Student(user);
+      store.state.isStudent = true;
     }
     else {
-      store.user = new Professor(user);
-      store.user.isStudent = false;
+      store.state.user = new Professor(user);
+      store.state.isStudent = false;
     }
   },
   async created() {
+    const store = useStore();
     var user = new User("Ayman", "Mahran", "agazmahran@mun.ca");
-    this.isStudent = await user.getType() == userType.Student;
-    this.courseObjects = await store.user.getCourses();
+    this.isStudent = store.state.isStudent;
+    // this.isStudent = await user.getType() == userType.Student;
+    if( store.state.isStudent ) {
+      user = new Student(user, "202045746");
+    }
+    else {
+      user = new Professor(user);
+    }
+    this.courseObjects = await user.getCourses();
+    console.log("Fsdfsd");
+    console.log(this.courseObjects);
     //console.log(await this.auth.userAttributes(this.user));
-    this.courses = this.courseObjects.map(course => course.getName());
+    this.courses = this.courseObjects.map(course => course.getTitle());
     console.log(this.courses);
   }
 };

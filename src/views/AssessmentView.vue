@@ -25,11 +25,12 @@
 <script>
 // @ is an alias to /src
 import TakeAssessmentWindow from "@/components/student/TakeAssessmentWindow.vue";
-import MarkAssessmentWindow from "@/components/student/MarkAssessmentWindow.vue";
+import MarkAssessmentWindow from "@/components/professor/MarkAssessmentWindow.vue";
 import AssessmentSideBar from "@/components/student/AssessmentSideBar.vue";
 import TimerWidget from "@/components/student/TimerWidget.vue";
 import { Assessment } from "procto-api";
-import { store } from '../store';
+import { useStore } from 'vuex';
+// import { store } from '../store';
 
 export default {
   name: "AssessmentView",
@@ -58,7 +59,8 @@ export default {
     }
   },
   async created() {
-      this.isStudent = store.isStudent;
+      const store = useStore();
+      this.isStudent = store.state.isStudent;
       var assessment = new Assessment("Midterm 1");
       this.time = await assessment.getDuration();
       console.log(this.time);

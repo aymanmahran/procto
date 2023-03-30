@@ -6,37 +6,60 @@
             <div style="text-align:center"> Email</div>
             <div style="text-align:right; margin-right: 50px"> Student ID</div>
         </div>
-        <StudentItem v-for="student in studentsList" :key="student.id" :student="student"></StudentItem>
+        <StudentItem v-for="student in studentProps" :key="student.id" :student="student"></StudentItem>
     </div>
 </template>
 
 <script>
 
 import StudentItem from './StudentItem.vue';
-import { store } from "../../store";
+import { useStore } from "vuex";
 
 export default {
     name: "CourseStudents",
     props: {
       course: {
-        type: String
+        type: Object
         }
     },
     components: {
         StudentItem
     },
+    watch: {
+      async course() {
+        this.studentsList = await this.course.getStudents(this.course);
+        this.studentProps = [];
+        this.studentsList.forEach(async (student) => {
+            this.studentProps.push({
+                firstname: await student.getFirstname(),
+                lastname: await student.getLastname(),
+                email: await student.getEmail(),
+                id: await student.getId()
+            });
+        });
+      }
+    },
     data() {
         return {
             studentsList: [],
-            user: null
+            user: null,
+            studentProps: []
         }
     },
     methods: {
     },
     async created() {
-        this.user = store.user;
-        console.log(store.set);
-        this.studentsList = await this.user.getStudents(this.course);
+        const store = useStore();
+        this.user = store.state.user;
+        this.studentsList = await this.course.getStudents(this.course);
+        this.studentsList.forEach(async (student) => {
+            this.studentProps.push({
+                firstname: await student.getFirstname(),
+                lastname: await student.getLastname(),
+                email: await student.getEmail(),
+                id: await student.getId()
+            });
+        });
     }
   }
 </script>

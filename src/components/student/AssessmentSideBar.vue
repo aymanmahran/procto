@@ -4,20 +4,23 @@
         
         <div class="title">Hello, Ayman</div>
       </div>
-      <div v-if="isStudent" style="width:100%; height: 500px; background-color: #330000;">
-        <div style = "margin-top: 40px;margin-left: 25px; width: calc(100% - 50px); height: 150px; background-color: #000;"></div>
+      <div id="cam-box" v-if="isStudent" style="width:100%; height: 500px; background-color: #330000;">
+        <video ref="camera" style = "margin-top: 30px;margin-left: 25px;" :width="220" :height="150" autoplay></video>
+        <canvas id="photoTaken" ref="canvas" style = "margin-top: 30px;margin-left: 25px;" :width="220" :height="150"></canvas>
+        <!-- <div style = "margin-top: 40px;margin-left: 25px; width: calc(100% - 50px); height: 150px; background-color: #000;"></div> -->
       </div>
       <div class="questions-list">
         <QuestionEntry @goTo="goTo" v-for="question in questions" :key="question" :questionNumber="question"></QuestionEntry>
       </div>
-      <div class="button" @click="$emit('submit')">Submit</div>
+      <div class="button" @click="submit">Submit</div>
 
     </div>
   </template>
   
   <script>
   import QuestionEntry from '../shared/QuestionEntry.vue';
-  import { store } from '../../store';
+  import { useStore } from 'vuex';
+  import * as faceapi from 'face-api.js';
   
   export default {
     name: "AssessmentSideBar",
@@ -32,13 +35,72 @@
     components: {
       QuestionEntry
     },
-    date() {
+    data() {
       return {
-        isStudent: store.isStudent
+        isStudent: true,
+        faceDetectInterval: null,
+        videoStream: null
       }
+    },
+    async created() {
+      const store = useStore();
+      this.isStudent = store.state.isStudent;
+      if(this.isStudent) {
+        const constraints = (window.constraints = {
+          audio: false,
+          video: true
+        });
+
+        faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+        faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+        faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+        faceapi.nets.faceExpressionNet.loadFromUri('/models')
+
+        navigator.mediaDevices
+          .getUserMedia(constraints)
+          .then(stream => {
+            this.videoStream = stream;
+            this.isLoading = false;
+            this.$refs.camera.srcObject = stream;
+          })
+          .catch(error => {
+            this.isLoading = false;
+            console.log(error);
+            alert("May the browser didn't support or there is some errors.");
+          });
+
+        var alerted = false, time = 0;
+        
+        setTimeout(() => {
+            const video = this.$refs.camera;
+            // const canvas = faceapi.createCanvasFromMedia(video)
+            var canvas = this.$refs.canvas;
+            const displaySize = { width: video.width, height: video.height }
+            faceapi.matchDimensions(canvas, displaySize)
+            this.faceDetectInterval = setInterval(async () => {
+              const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+              const resizedDetections = faceapi.resizeResults(detections, displaySize)
+              console.log(detections.length);
+              if(detections.length == 0) time += 100;
+              if(time > 5000 && !alerted) {
+                alerted = true;
+                alert("This is an alert that no face has been detected for longer than 5 seconds. Suspected behaviour will be reported.");
+                time = 0;
+                alerted = false;
+              }
+              canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+              faceapi.draw.drawDetections(canvas, resizedDetections);
+            }, 100);
+          }, 3000);  
+      }
+
     },
     methods: {
       submit() {
+        if(this.isStudent) {
+          clearInterval(this.faceDetectInterval);
+          this.videoStream.getTracks().forEach(track => track.stop());
+        }
         this.$emit('submit');
       },
       goTo(number) {
@@ -104,6 +166,13 @@
   .questions-list {
     height: calc(100% - 70px);
     margin-top: 50px;
+  }
+
+  #cam-box {
+    position: relative;
+  }
+  #cam-box canvas, video {
+    position: absolute;
   }
 
   </style>

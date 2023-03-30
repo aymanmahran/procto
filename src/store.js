@@ -1,6 +1,17 @@
-import { reactive } from 'vue';
+import { createStore } from 'vuex'
 
-export const store = reactive({
-    user: null,
-    isStudent: 0
-});
+export default createStore({
+    state: {
+        user: null,
+        isStudent: true
+    },
+    mutations: {
+
+    },
+    actions: {
+
+    },
+    getters: {
+
+    }
+})

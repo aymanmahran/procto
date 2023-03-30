@@ -12,4 +12,16 @@ export default class User {
     async getType(): Promise<userType> {
         return Promise.resolve(userType.Student);
     }
+
+    async getFirstname(): Promise<Name> {
+        return Promise.resolve(this.firstname);
+    }
+
+    async getLastname(): Promise<Name> {
+        return Promise.resolve(this.lastname);
+    }
+
+    async getEmail(): Promise<Email> {
+        return Promise.resolve(this.email);
+    }
 }

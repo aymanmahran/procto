@@ -26,6 +26,9 @@
         this.currentTime = Number(this.time);
         setTimeout(this.setTime, 1000);
     },
+    unmounted() {
+      clearTimeout(this.interval);
+    },
     methods: {
       format(value) {
         var formattedTime = "";
@@ -55,7 +58,7 @@
         console.log(this.currentTime);
         this.currentTime--;
         if (this.currentTime > 0) {
-          setTimeout(this.countdown, 1000);
+          this.interval = setTimeout(this.countdown, 1000);
         } else {
           this.currentTime = null;
         }

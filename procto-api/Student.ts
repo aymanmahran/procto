@@ -1,5 +1,7 @@
 import User from './User';
+import { Course, StudentCourse } from './Course';
 import { Name, Email } from './types';
+import AssessmentCabinet from './AssessmentCabinet'
 export default class Student extends User {
     id: string;
 
@@ -8,7 +10,11 @@ export default class Student extends User {
         this.id = id;
     }
 
-    async getCourses() {
+    async getId(): Promise<string> {
+        return Promise.resolve(this.id);
+    }
+
+    async getCourses(): Promise<Course[]> {
         // const apiName = 'MyApiName';
         // const path = '/path';
         // const myInit = {
@@ -28,7 +34,9 @@ export default class Student extends User {
         //         return {};
         //     });
 
-        return ['ECE 5010', 'ECE 5200', 'ECE 5400', 'ECE 5500'];
+        var course: Course = new StudentCourse('ECE 5500', this, new AssessmentCabinet());
+        return [course];
+        //feturn ['ECE 5010', 'ECE 5200', 'ECE 5400', 'ECE 5500'];
     }
 
     async startAssessment(): Promise<void> {
