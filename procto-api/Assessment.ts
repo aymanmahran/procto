@@ -45,6 +45,6 @@ export default class Assessment {
     }
 
     async getDuration() {
-        return "20";
+        return "360";
     }
 }

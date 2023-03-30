@@ -66,7 +66,7 @@
           .catch(error => {
             this.isLoading = false;
             console.log(error);
-            alert("May the browser didn't support or there is some errors.");
+            alert("Camera access was not allowed!");
           });
 
         var alerted = false, time = 0;
