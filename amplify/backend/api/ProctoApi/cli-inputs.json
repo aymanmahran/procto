@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "paths": {
+    "/professor": {
+      "name": "/professor",
+      "lambdaFunction": "professorLambda",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/student": {
+      "name": "/student",
+      "lambdaFunction": "studentLambda",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/course": {
+      "name": "/course",
+      "lambdaFunction": "courseLambda",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/assessment": {
+      "name": "/assessment",
+      "lambdaFunction": "assessmentLambda",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/response": {
+      "name": "/response",
+      "lambdaFunction": "responseLambda",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/report": {
+      "name": "/report",
+      "lambdaFunction": "reportLambda",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

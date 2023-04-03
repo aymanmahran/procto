@@ -104,7 +104,7 @@ export default {
     var user = new User("Ayman", "Mahran", "agazmahran@mun.ca");
     console.log(await user.getType());
     console.log(userType.Student);
-    if (await user.getType() == userType.Student) {
+    if (await user.getType() != userType.Student) {
       store.state.user = new Student(user);
       store.state.isStudent = true;
     }

@@ -9,11 +9,49 @@
       "UnauthRoleName": "amplify-procto-staging-54706-unauthRole",
       "StackName": "amplify-procto-staging-54706",
       "StackId": "arn:aws:cloudformation:us-east-2:554343211545:stack/amplify-procto-staging-54706/7bcce120-c619-11ed-9c61-06c9722b62f4",
-      "AmplifyAppId": "ds6ppbpmod1r6"
+      "AmplifyAppId": "ds6ppbpmod1r6",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-procto-staging-54706-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "auth": {
         "Procto": {}
+      },
+      "function": {
+        "professorLambda": {
+          "deploymentBucketName": "amplify-procto-staging-54706-deployment",
+          "s3Key": "amplify-builds/professorLambda-7a7369526b7142773952-build.zip"
+        },
+        "studentLambda": {
+          "deploymentBucketName": "amplify-procto-staging-54706-deployment",
+          "s3Key": "amplify-builds/studentLambda-6b52774e752f4b576862-build.zip"
+        },
+        "courseLambda": {
+          "deploymentBucketName": "amplify-procto-staging-54706-deployment",
+          "s3Key": "amplify-builds/courseLambda-564c64746e3678575642-build.zip"
+        },
+        "assessmentLambda": {
+          "deploymentBucketName": "amplify-procto-staging-54706-deployment",
+          "s3Key": "amplify-builds/assessmentLambda-7a526d6f784743537551-build.zip"
+        },
+        "responseLambda": {
+          "deploymentBucketName": "amplify-procto-staging-54706-deployment",
+          "s3Key": "amplify-builds/responseLambda-704d4f5430654c72635a-build.zip"
+        },
+        "reportLambda": {
+          "deploymentBucketName": "amplify-procto-staging-54706-deployment",
+          "s3Key": "amplify-builds/reportLambda-6a347253506d64397949-build.zip"
+        }
+      },
+      "storage": {
+        "Professors": {},
+        "Students": {},
+        "Courses": {},
+        "Assessments": {},
+        "Responses": {},
+        "Reports": {}
+      },
+      "api": {
+        "ProctoApi": {}
       }
     }
   }

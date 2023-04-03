@@ -1,4 +1,60 @@
 {
+  "api": {
+    "ProctoApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "professorLambda"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "studentLambda"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "courseLambda"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "assessmentLambda"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "responseLambda"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "reportLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
   "auth": {
     "Procto": {
       "customAuth": false,
@@ -28,6 +84,246 @@
       },
       "providerPlugin": "awscloudformation",
       "service": "Cognito"
+    }
+  },
+  "function": {
+    "assessmentLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "Assessments"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "courseLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "Courses"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "professorLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "Professors"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "reportLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "Reports"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "responseLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "Responses"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "studentLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "Students"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_assessmentLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "assessmentLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_assessmentLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "assessmentLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_courseLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "courseLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_courseLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "courseLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_professorLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "professorLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_professorLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "professorLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_reportLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "reportLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_reportLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "reportLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_responseLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "responseLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_responseLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "responseLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_studentLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "studentLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_studentLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "studentLambda"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "Assessments": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "Courses": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "Professors": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "Reports": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "Responses": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "Students": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
     }
   }
 }
