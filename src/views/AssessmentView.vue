@@ -4,7 +4,7 @@
       <div class="timer-box">
       <div style="width: 120px; margin:auto"><TimerWidget :time="time"/></div>
       </div>
-      <TakeAssessmentWindow @updateAnswers="updateAnswers" :questions="questions"/>
+      <TakeAssessmentWindow @updateAnswers="updateAnswers" :questions="questions" :questionsObject="questionsObject"/>
     </div>
     <div>
       <AssessmentSideBar @submit="submit" :name="name" :questions="questionsIndex"/>
@@ -28,7 +28,6 @@ import TakeAssessmentWindow from "@/components/student/TakeAssessmentWindow.vue"
 import MarkAssessmentWindow from "@/components/professor/MarkAssessmentWindow.vue";
 import AssessmentSideBar from "@/components/student/AssessmentSideBar.vue";
 import TimerWidget from "@/components/student/TimerWidget.vue";
-import { Assessment } from "procto-api";
 import { useStore } from 'vuex';
 // import { store } from '../store';
 
@@ -51,6 +50,7 @@ export default {
   data() {
     return {
       questions: [],
+      questionsObject: [],
       questionsIndex: [],
       name: "",
       time: "",
@@ -60,14 +60,26 @@ export default {
   },
   async created() {
       const store = useStore();
+      const assessment = store.state.selectedAssessment;
       this.isStudent = store.state.isStudent;
-      var assessment = new Assessment("Midterm 1");
       this.time = await assessment.getDuration();
-      console.log(this.time);
-      this.questions = await assessment.getQuestions();
-      this.name = await assessment.getName();
-      this.questionsIndex = this.questions.map(question => question.number);
-      this.answers = new Array(this.questionsIndex.length);
+      this.questionsObject = await assessment.getQuestions();
+      this.name = await assessment.getTitle();
+
+      this.questions = [];
+      this.questionsObject.forEach(async (question, i) => {
+        const prompt = await question.getPrompt();
+        const type = await question.getType();
+        this.questions.push({
+          number: i+1,
+          prompt: prompt,
+          type: type,
+          answer: ""
+        })
+      });
+
+      this.questionsIndex = this.questions.map((question, i) => (i+1));
+      this.answers = new Array(this.questionsIndex.length + 1);
   },
   methods: {
     submit() {

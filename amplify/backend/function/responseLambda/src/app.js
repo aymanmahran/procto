@@ -23,10 +23,10 @@ if (process.env.ENV && process.env.ENV !== "NONE") {
 }
 
 const userIdPresent = false; // TODO: update in case is required to use that definition
-const partitionKeyName = "id";
+const partitionKeyName = "student";
 const partitionKeyType = "S";
-const sortKeyName = "";
-const sortKeyType = "";
+const sortKeyName = "assessment";
+const sortKeyType = "S";
 const hasSortKey = sortKeyName !== "";
 const path = "/response";
 const UNAUTH = 'UNAUTH';

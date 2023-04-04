@@ -97,12 +97,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "proctoLambdaRolec49dc757",
+            "proctoLambdaRoledf6c48d0",
             {
               "Fn::Join": [
                 "",
                 [
-                  "proctoLambdaRolec49dc757",
+                  "proctoLambdaRoledf6c48d0",
                   "-",
                   {
                     "Ref": "env"

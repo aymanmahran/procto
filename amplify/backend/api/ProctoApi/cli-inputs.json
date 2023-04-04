@@ -53,9 +53,9 @@
         ]
       }
     },
-    "/response": {
-      "name": "/response",
-      "lambdaFunction": "responseLambda",
+    "/report": {
+      "name": "/report",
+      "lambdaFunction": "reportLambda",
       "permissions": {
         "setting": "private",
         "auth": [
@@ -66,9 +66,9 @@
         ]
       }
     },
-    "/report": {
-      "name": "/report",
-      "lambdaFunction": "reportLambda",
+    "/response": {
+      "name": "/response",
+      "lambdaFunction": "responseLambda",
       "permissions": {
         "setting": "private",
         "auth": [

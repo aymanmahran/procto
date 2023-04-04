@@ -2,9 +2,25 @@
   "resourceName": "Responses",
   "tableName": "Responses",
   "partitionKey": {
-    "fieldName": "id",
+    "fieldName": "student",
     "fieldType": "string"
   },
-  "gsi": [],
+  "sortKey": {
+    "fieldName": "assessment",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "by-assessment",
+      "partitionKey": {
+        "fieldName": "assessment",
+        "fieldType": "string"
+      },
+      "sortKey": {
+        "fieldName": "student",
+        "fieldType": "string"
+      }
+    }
+  ],
   "triggerFunctions": []
 }

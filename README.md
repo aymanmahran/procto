@@ -1,6 +1,15 @@
 # Procto - Automated Proctoring Software
 
-Procto is an automated proctoring software for invigilating assessments without human interaction. It allows professors to create assessments and invite students to take them virtually. Professors can mark the assessments and will be notified of any academic misconduct.
+Procto is an automated proctoring software for invigilating assessments without human interaction. Through the web app, professors can:
+- Add students to a course
+- Create an assessment
+- View student's answer to that assessment
+- Give students marks for the assessment
+- Be notified of any academic misconduct
+
+In addition, students can:
+- Start and submit an assessment
+- View upcoming and past assessments
 
 ## Structure
 
@@ -28,22 +37,33 @@ Use case diagrams for reference:
 ![Final](https://user-images.githubusercontent.com/55334062/228271138-a7077d42-7927-436f-9993-19efb311398b.png)
 
 
-Below is the work done so far in the project. Most of the use cases from the first iteration as well as some of the final demo use cases were covered. The first stage mainly focused on implementing the web app interface. The next stage will involve the back-end implementation and functionality.
+Below is the work done so far in the project. Most of the use cases from the first iteration as well as some of the final demo use cases were covered. The first stage mainly focused on implementing the web app interface. The next stage involved the back-end implementation and functionality, as well as creating the database and tables.
 
+**First stage:**
 - Front-end:
     - Most of the features are implemented, this includes the main views and components
     - Student interface to view courses, upcoming and past assessments, and start and assessment
     - Professor interface to view courses and students, assessments, and view and mark students' responses
-    - *TODO*: add an assessment, add a student, proctoring interface when taking an assessment
 
 - Back-end:
     - Skeleton for main classes and interfaces are coded
     - Methods return dummy data for testing
-    - *TODO*: actual implementation for class methods to communicate with the database
 
 - Cloud:
     - Authentication of users and logging in with Google account
-    - *TODO*: creating the database and the necessary tables
+
+**Final stage:**
+- Front-end:
+    - Interface for professors to add an assessment and add a student
+    - Proctoring interface when taking an assessment
+
+- Back-end:
+    - Implementation of class methods and helper functions
+    - Functions to make API requests to the database
+
+- Cloud:
+    - Created a database with tables to store professors, students, and assessments information
+    - Created API endpoints and event functions to retrieve from and write to the tables
 
 ## Project setup
 
@@ -75,12 +95,29 @@ npm link procto-api
 npm install
 ```
 
-4. To launch a local server for testing, run serve inside the app folder
+After the local setup is done, the cloud infrastructure need to be deployed so that the app can communicate with a cloud storage. The web app uses AWS to host the cloud infrastructure. Deployment is made easy using AWS Amplify, where the resources information is specified with the project inside the `backend` folder.
+
+4. First, create an account on AWS from [here](https://aws.amazon.com/console). Then set up Amplify inside the project folder by running the commands and following the terminal instructions
+
+```
+cd procto
+amplify configure
+amplify init
+```
+
+5. After that, deploy the project resources
+
+```
+amplify push
+```
+The app should be ready for development.
+
+6. To launch a local server for testing, run serve inside the app folder
 ```
 npm run serve
 ```
 
-5. Finally, go to a browser and enter the local server address to view the website
+7. Finally, go to a browser and enter the local server address to view the website
 ```
 http://localhost:3000/
 ```
@@ -94,3 +131,10 @@ Follow the same steps as above. To compile and minify the app for production, ru
 npm run build
 ```
 The output in `dist` folder can then be deployed to any web hosting service (in this case, AWS). The folder can also be uploaded to services like Heroku for fast deployment.
+
+To host the app on AWS:
+
+1. Login to the [AWS Console](https://console.aws.amazon.com/console/home)
+2. Launch the AWS Amplify Studio from the resources menu
+3. Under `Hosting environment`, click `Deploy without Git provider`
+4. Upload the project files

@@ -7,16 +7,17 @@ import HomeView from './HomeView.vue';
       <HomeView :user="user" :auth="auth"/>
     </template>
     <template #fallback>
-      <Loading />
+      <LoadingWidget></LoadingWidget>
     </template>
   </Suspense>
 </template>
 
 <script>
-import HomeView from "./HomeView.vue"
+import HomeView from "./HomeView.vue";
+import LoadingWidget from "../components/shared/LoadingWidget.vue";
 
 export default {
-  components: { HomeView },
+  components: { HomeView, LoadingWidget},
   props: {
     user: Object,
     auth: Object

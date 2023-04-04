@@ -1,7 +1,7 @@
 <template>
     <div style="margin: 40px">
-        <div v-for="question in questions" :key="question.number">
-            <SimpleQuestion :mutable="true" @update="update" :questionProps="question"/>
+        <div v-for="(question, i) in questions" :key="i+1">
+            <SimpleQuestion :mutable="true" @update="update" :question="questionObjects[i]" :questionProps="question"/>
         </div>
     </div>
 </template>
@@ -14,6 +14,9 @@ export default {
     name: "TakeAssessmentWindow",
     props: {
         questions: {
+            type: Array
+        },
+        questionObjects: {
             type: Array
         }
     },

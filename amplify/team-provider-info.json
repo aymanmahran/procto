@@ -33,13 +33,13 @@
           "deploymentBucketName": "amplify-procto-staging-54706-deployment",
           "s3Key": "amplify-builds/assessmentLambda-7a526d6f784743537551-build.zip"
         },
-        "responseLambda": {
-          "deploymentBucketName": "amplify-procto-staging-54706-deployment",
-          "s3Key": "amplify-builds/responseLambda-704d4f5430654c72635a-build.zip"
-        },
         "reportLambda": {
           "deploymentBucketName": "amplify-procto-staging-54706-deployment",
           "s3Key": "amplify-builds/reportLambda-6a347253506d64397949-build.zip"
+        },
+        "responseLambda": {
+          "deploymentBucketName": "amplify-procto-staging-54706-deployment",
+          "s3Key": "amplify-builds/responseLambda-5539792f426268624570-build.zip"
         }
       },
       "storage": {
@@ -47,8 +47,8 @@
         "Students": {},
         "Courses": {},
         "Assessments": {},
-        "Responses": {},
-        "Reports": {}
+        "Reports": {},
+        "Responses": {}
       },
       "api": {
         "ProctoApi": {}

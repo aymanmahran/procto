@@ -40,7 +40,7 @@
             "Arn"
           ],
           "category": "function",
-          "resourceName": "responseLambda"
+          "resourceName": "reportLambda"
         },
         {
           "attributes": [
@@ -48,7 +48,7 @@
             "Arn"
           ],
           "category": "function",
-          "resourceName": "reportLambda"
+          "resourceName": "responseLambda"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -73,7 +73,11 @@
           ],
           "passwordPolicyMinLength": 8
         },
-        "signupAttributes": [],
+        "signupAttributes": [
+          "GIVEN_NAME",
+          "FAMILY_NAME",
+          "EMAIL"
+        ],
         "socialProviders": [
           "GOOGLE"
         ],

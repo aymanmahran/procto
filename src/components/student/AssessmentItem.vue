@@ -1,14 +1,12 @@
 <template>
     <div class="expanded-assessment-item">
       <div class="assessment-item">
-        <router-link :to="`/take-assessment?id=`+assessment.id" >
-          <div style="margin-left: 30px;">
-            <div style="font-weight: bold; font-size: 20px; margin-bottom: 10px; margin-top:10px; text-align: left;">{{ assessment.name }}</div>
-            <div class="text">{{ assessment.course }}</div>
-          </div>
-        </router-link>
+        <div @click="startAssessment" style="margin-left: 30px;">
+          <div style="font-weight: bold; font-size: 20px; margin-bottom: 10px; margin-top:10px; text-align: left;">{{ assessment.title }}</div>
+          <div class="text">{{ assessment.course }}</div>
+        </div>
         <div style="margin: auto;">
-          <div style="color: rgb(99, 99, 99) ;font-size: 14px; margin-bottom: 10px;text-align: left;">{{ assessment.date }} at {{ assessment.time }}</div>
+          <div style="color: rgb(99, 99, 99) ;font-size: 14px; margin-bottom: 10px;text-align: left;">{{ assessment.date }} <br/> at {{ assessment.time }}</div>
         </div>
         <div style="margin: auto;">
           <img v-if="expanded" @click="expand" src="../../assets/collapse.jpg" width="30" height="30"/>
@@ -16,12 +14,15 @@
         </div>
       </div>
       <div v-if="expanded" class="text" style="height: 30px; margin: 20px; margin-top:20; font-style: italic;">
-      {{ assessment.grade ?  `Grade: ${assessment.grade}%`: "Not graded yet"}}
+      {{ assessment.grade ? `Grade: ${assessment.grade}%`: "Not graded yet"}}
       </div>
     </div>
   </template>
   
   <script>
+
+  import { useStore } from 'vuex';
+
   export default {
     name: "AssessmentItem",
     props: {
@@ -31,14 +32,25 @@
     },
     data() {
       return {
-        expanded: false
+        expanded: false,
+        store: null
       }
     },
     methods: {
       expand() {
         console.log(this.expanded)
         this.expanded = !this.expanded;
+      },
+      startAssessment() {
+        console.log("Fdsfdsfdsfd");
+        console.log(this.store);
+        this.store.state.selectedAssessment = this.assessment.assessment;
+        this.$router.push({name: 'assessment'});
       }
+    },
+    created() {
+      const store = useStore();
+      this.store = store;
     }
   }
   </script>
