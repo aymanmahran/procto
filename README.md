@@ -39,14 +39,14 @@ The project has main 3 components:
 - **Cloud infrastructure (on AWS)**
     - The cloud part represents the database and tables used to store information about assessments and grades. It also includes the authentication and verification of users.
     Tables:
-        - | Table | Fields |
-        | --- | --- |
-        | Students | *username*, firstname, lastname, email, id, courses |
-        | Professors | *username*, firstname, lastname, email, courses |
-        | Courses | *id*, title, students, assessments |
-        | Assessments | *id*, title, start, duration, weight, questions |
-        | Responses | *id*, started, submitted, answers, marks, reports |
-        | Reports | *id*, type, time, details |
+| Table | Fields | 
+| --- | --- |
+| Students | *username*, firstname, lastname, email, id, courses |
+| Professors | *username*, firstname, lastname, email, courses |
+| Courses | *id*, title, students, assessments |
+| Assessments | *id*, title, start, duration, weight, questions |
+| Responses | *id*, started, submitted, answers, marks, reports |
+| Reports | *id*, type, time, details |
 
 
 ## Progress
