@@ -60,7 +60,8 @@ import { useStore } from 'vuex';
         if (date < now) {
           a = new ImmutableAssessment(assessment, store.state.username);
           this.decoratedAssessments.push(a);
-          grade = await a.getFinalMark() ?? null;
+          grade = await a.getFinalMark();
+          console.log("Fsdfsd", grade);
         }
         else {
           a = new AnswerableAssessment(assessment);

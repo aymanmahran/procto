@@ -3,6 +3,7 @@ export interface Question {
     getWeight(): Promise<number>;
     getNumber(): Promise<number>;
     getObject(): Promise<any>;
+    getType(): Promise<string>;
 }
 
 abstract class SimpleQuestion implements Question {
@@ -37,6 +38,8 @@ abstract class SimpleQuestion implements Question {
         });
     }
 
+    abstract getType(): Promise<string>;
+
     setPrompt(prompt: string): Promise<boolean> {
         this.prompt = prompt;
         return Promise.resolve(true);
@@ -70,6 +73,10 @@ export class MultipleChoice extends SimpleQuestion {
     async getOptions(): Promise<string[]> {
         return Promise.resolve(this.options);
     }
+
+    async getType(): Promise<string> {
+        return 'mcq';
+    }
 }
 
 export class LongAnswer extends SimpleQuestion {
@@ -89,6 +96,10 @@ export class LongAnswer extends SimpleQuestion {
     async getMaxLines(): Promise<number> {
         return Promise.resolve(this.maxLines);
     }
+
+    async getType(): Promise<string> {
+        return 'long';
+    }
 }
 abstract class QuestionDecorator implements Question {
 
@@ -98,20 +109,24 @@ abstract class QuestionDecorator implements Question {
         this.question = question;
     }
 
-    getPrompt(): Promise<string> {
+    async getPrompt(): Promise<string> {
         return this.question.getPrompt();
     }
 
-    getWeight(): Promise<number> {
+    async getWeight(): Promise<number> {
         return this.question.getWeight();
     }
 
-    getNumber(): Promise<number> {
+    async getNumber(): Promise<number> {
         return this.question.getNumber();
     }
 
-    getObject(): Promise<any> {
+    async getObject(): Promise<any> {
         return this.question.getObject();
+    }
+
+    async getType(): Promise<string> {
+        return this.question.getType();
     }
 }
 

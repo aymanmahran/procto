@@ -4,7 +4,7 @@
       <div class="timer-box">
       <div style="width: 120px; margin:auto"><TimerWidget :time="time"/></div>
       </div>
-      <TakeAssessmentWindow @updateAnswers="updateAnswers" :questions="questions" :questionsObject="questionsObject"/>
+      <TakeAssessmentWindow @updateAnswers="updateAnswers" :questions="questions" :questionObjects="questionObjects"/>
     </div>
     <div>
       <AssessmentSideBar @submit="submit" :name="name" :questions="questionsIndex"/>
@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       questions: [],
-      questionsObject: [],
+      questionObjects: [],
       questionsIndex: [],
       name: "",
       time: "",
@@ -63,11 +63,11 @@ export default {
       const assessment = store.state.selectedAssessment;
       this.isStudent = store.state.isStudent;
       this.time = await assessment.getDuration();
-      this.questionsObject = await assessment.getQuestions();
+      this.questionObjects = await assessment.getQuestions();
       this.name = await assessment.getTitle();
 
       this.questions = [];
-      this.questionsObject.forEach(async (question, i) => {
+      this.questionObjects.forEach(async (question, i) => {
         const prompt = await question.getPrompt();
         const type = await question.getType();
         this.questions.push({
@@ -82,7 +82,8 @@ export default {
       this.answers = new Array(this.questionsIndex.length + 1);
   },
   methods: {
-    submit() {
+    async submit() {
+      await store.state.selectedAssessment.submitAssessment();
       this.$router.push({name: 'home'});
     },
     updateAnswers(answers) {
