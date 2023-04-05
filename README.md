@@ -20,15 +20,16 @@ The project has main 3 components:
 - **Front-end web app (uses Vue.js)**
     - Involves the UI, interface components, and the presentation of data to the end user. Written on Vue.js, the interface is divided into views (pages) and reactive components (buttons, bars, boxes,...). The reactivity provided by Vue.js emulates Decorator and Proxy design patterns, where components providing certain functionalities are shown or hidden depending on the actor (student vs professor).
 
-    Main Views:
+    - Main Views:
         - **HomeView**: displays the courses on the side bar. For students, a list of assessments is shown in the main window. For professors, the main window lists students and assessments
         - **AssessmentView**: shared between students and professors as well. It is used to take an assessment (student) or mark an assessment (professor)
-    This part also hosts the AI model used to detect faces and track eyes. This uses a third party library [face-api.js](https://github.com/justadudewhohacks/face-api.js).
+   
+    - This part also hosts the AI model used to detect faces and track eyes. This uses a third party library [face-api.js](https://github.com/justadudewhohacks/face-api.js).
 
 - **Back-end API (procto-api)**
     - This is a Typescript package that acts as an interface between the web app and the cloud. It exports classes that supply the app with the needed methods to retrieve and update data. The relations between classes in this package are illustrated by the class diagram provided and explained in the design presentation. Though the concept of interfaces is slightly different in Typescript, the relations and patterns still hold.
     
-    Main classes:
+    - Main classes:
         - **User**: commom attributes and methods between *Student* and *Professor*
         - **Student**: allows access to specific functions of courses and assessments
         - **Professor**: has full access to courses and assessments
