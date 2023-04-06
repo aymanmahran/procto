@@ -6,13 +6,15 @@
             <div style="text-align:center"> Email</div>
             <div style="text-align:right; margin-right: 50px"> Student ID</div>
         </div>
-        <StudentItem v-for="student in studentProps" :key="student.id" :student="student"></StudentItem>
+        <div v-if="selected == 0"> <StudentItem v-for="student in studentProps" :key="student.id" :student="student"></StudentItem> </div>
+        <div style="width: 100%; margin-top: 25%;" v-else-if="selected == 1"> <LoadingWidget></LoadingWidget> </div>
     </div>
 </template>
 
 <script>
 
 import StudentItem from './StudentItem.vue';
+import LoadingWidget from '../shared/LoadingWidget.vue';
 import { useStore } from "vuex";
 
 export default {
@@ -23,27 +25,35 @@ export default {
         }
     },
     components: {
-        StudentItem
+        StudentItem,
+        LoadingWidget
     },
     watch: {
-      async course() {
-        this.studentsList = await this.course.getStudents(this.course);
-        this.studentProps = [];
-        this.studentsList.forEach(async (student) => {
-            this.studentProps.push({
-                firstname: await student.getFirstname(),
-                lastname: await student.getLastname(),
-                email: await student.getEmail(),
-                id: await student.getId()
-            });
-        });
-      }
+        async course() {
+            this.selected = 1;
+            this.studentsList = await this.course.getStudents();
+            this.studentProps = [];
+            for(let student of this.studentsList) {
+                const firstname = await student.getFirstname();
+                const lastname = await student.getLastname();
+                const email = await student.getEmail();
+                const id = await student.getId();
+
+                this.studentProps.push({
+                    firstname: firstname,
+                    lastname: lastname,
+                    email: email,
+                    id: id
+                });
+            }
+            this.selected = 0;
+        }
     },
     data() {
         return {
-            studentsList: [],
-            user: null,
-            studentProps: []
+            studentProps: [],
+            studentsList:[],
+            selected: 1
         }
     },
     methods: {
@@ -51,15 +61,26 @@ export default {
     async created() {
         const store = useStore();
         this.user = store.state.user;
-        this.studentsList = await this.course.getStudents(this.course);
-        this.studentsList.forEach(async (student) => {
+        store.state.students = [];
+        this.selected = 1;
+        this.studentsList = await this.course.getStudents();
+        this.studentProps = [];
+        for(let student of this.studentsList) {
+            const firstname = await student.getFirstname();
+            const lastname = await student.getLastname();
+            const email = await student.getEmail();
+            const id = await student.getId();
+
             this.studentProps.push({
-                firstname: await student.getFirstname(),
-                lastname: await student.getLastname(),
-                email: await student.getEmail(),
-                id: await student.getId()
+                firstname: firstname,
+                lastname: lastname,
+                email: email,
+                id: id
             });
-        });
+        }
+        this.selected = 0;
+        store.state.students = this.studentProps;
+        console.log(this.studentsList);
     }
   }
 </script>
@@ -67,7 +88,7 @@ export default {
 <style scoped>
 .tabs_content {
     background-color: #fff;
-    min-height: calc(100% - 150px);
+    min-height: calc(100% - 170px);
     /* display: grid; */
     /* place-items: top; */
     border-radius: 0 0 5px 5px;

@@ -19,4 +19,14 @@ export abstract class AssessmentFactory {
             return Promise.reject();
         }
     }
+
+    static async get(id: string): Promise<Assessment> {
+        try {
+            return new SimpleAssessment(id);
+        }
+        catch (err: any) {
+            console.log(err.response.data);
+            return Promise.reject();
+        }
+    }
 }

@@ -24,7 +24,8 @@ export default class Professor extends User {
         try {
             const result = await AWS.API.get('ProctoApi', `/professor/${this.username}`, {});
             JSON.parse(result[0].courses ?? "[]").forEach((courseId: ID) => this.courses.push(new ProfessorCourse(courseId)));
-            this.courses.forEach(course => course.init());
+            for (let course of this.courses)
+                await course.init();
             return true;
         }
         catch (err: any) {
@@ -42,7 +43,7 @@ export default class Professor extends User {
     // }
 
     async getCourses(): Promise<Course[]> {
-        if (!await this.initPr()) return Promise.reject();
+        if (this.courses.length == 0) await this.initPr();
         return this.courses;
     }
 

@@ -1,6 +1,3 @@
-
-import HomeView from './HomeView.vue';
-
 <template>
   <Suspense>
     <template #default>

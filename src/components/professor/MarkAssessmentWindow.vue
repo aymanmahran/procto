@@ -3,7 +3,7 @@
         <div v-for="question in questions" :key="question.number">
             <SimpleQuestion :mutable="false" :questionProps="question"/>
             <div class="grade-box">
-                <input type="text" v-model="mark" @keyup="$emit('update', number, ans)" rows="1" class="grade-input"/>
+                <input type="text" v-model="marks[question.number]" @keyup="update(question.number)" rows="1" class="grade-input"/>
                 <div class="grade-weight"> {{ question.weight }} </div>
             </div>
         </div>
@@ -19,6 +19,9 @@ export default {
     props: {
         questions: {
             type: Array
+        },
+        questionObjects: {
+            type: Array
         }
     },
     data() {
@@ -30,10 +33,11 @@ export default {
         SimpleQuestion
     },
     methods: {
-        update(number, mark) {
+        async update(number) {
             console.log(number);
-            this.marks[Number(number)] = mark;
-            this.$emit('updateMarks', this.marks);
+            await this.questionObjects[number - 1].setMark(this.marks[number]);
+            console.log(this.marks[number]);
+            //this.$emit('updateMarks', this.marks);
         }
     }
 }

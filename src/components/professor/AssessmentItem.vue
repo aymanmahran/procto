@@ -2,14 +2,14 @@
   <div class="parent-container">
     <div class="assessment-item">
         <div style="margin: auto; margin-left: 30px;">
-          <div style="font-weight: bold; font-size: 20px; margin:auto; text-align: left;"> Test </div>
+          <div style="font-weight: bold; font-size: 20px; margin:auto; text-align: left;"> {{assessment.title}} </div>
         </div>
       <div class="hover">
-        <img style="margin: auto" @click="expand" src="../../assets/edit.png" width="25" height="25"/>
+        <img style="margin: auto" @click="edit" src="../../assets/edit.png" width="25" height="25"/>
       </div>
 
       <div class="hover">
-        <img style="margin: auto" @click="expand" src="../../assets/delete.png" width="25" height="25"/>
+        <img style="margin: auto" @click="t" src="../../assets/delete.png" width="25" height="25"/>
       </div>
 
       <div class="hover">
@@ -18,9 +18,10 @@
       </div>
     </div>
     <div class="expandable" ref="student-responses" :style="[expanded ? { height : computedHeight } : {}]">
-      <div style="margin-top: 15px; margin-bottom: 15px">
-        <StudentResponseItem v-for="response in studentResponses" :key="response.student.id" :student="response.student" :assessment="assessment.id"/>
+      <div v-if="selected == 1" style="margin-top: 15px; margin-bottom: 15px">
+        <StudentResponseItem v-for="response in studentResponses" :key="response.username" :student="response" :assessment="assessment.id"/>
       </div>
+      <div style="width: 100%; height: 100px" v-else-if="selected == 0"> <LoadingWidget></LoadingWidget> </div>
     </div>
   </div>
   </template>
@@ -28,31 +29,66 @@
   <script>
 
   import StudentResponseItem from './StudentResponseItem.vue';
+  import LoadingWidget from '../shared/LoadingWidget.vue';
+  import { useStore } from 'vuex';
 
   export default {
     name: "AssessmentItem",
     props: {
       assessment: {
         type: Object
-      },
-      studentResponses: {
-        type: Object
       }
     },
     data() {
       return {
+        store: null,
         expanded: false,
-        computedHeight: 0
+        computedHeight: 0,
+        studentResponses: [],
+        selected: 0
       }
     },
     components: {
-      StudentResponseItem
+      StudentResponseItem,
+      LoadingWidget
     },
     methods: {
-      expand() {
-        if(this.computedHeight == 'auto') this.initHeight();
+      async expand() {
         console.log(this.expanded)
+        //this.computedHeight = 100;
+        this.computedHeight = "100px";
         setTimeout(() => this.expanded = !this.expanded, 100);
+        if(!this.expanded) {
+          this.selected = 0;
+          this.studentResponses = [];
+          while(this.store.state.students.length == 0) {
+            this.selected = 0;
+          }
+          console.log(this.store.state.students);
+          const marks = await this.store.state.selectedCourse.getStudentMarks(this.assessment.id);
+          console.log(marks);
+          for(let student of this.store.state.students) {
+            console.log(student.email);
+            const mark = marks.filter(mark => mark.student == student.email)[0];
+            console.log(mark);
+            let totalMark = 0;
+            mark?.marks?.forEach(mark => totalMark += Number(mark));
+            this.studentResponses.push({
+              ...student,
+              grade: mark?.marks?.length == 0 ? -1 : totalMark,
+              username: student.email
+            })
+          }
+          this.selected = 1;
+        }
+        console.log(this.studentResponses);
+        //this.initHeight();
+        this.computedHeight = (90 * this.studentResponses.length).toString() + "px";
+        //setTimeout(() => this.expanded = !this.expanded, 1000);
+      },
+      edit(){
+        console.log(this.assessment.id);
+        this.$router.push({ path: 'new-assessment', query: { id: this.assessment.id} });
       },
       initHeight() {
 
@@ -72,6 +108,10 @@
     },
     mounted() {
       this.initHeight();
+    },
+    created() {
+      const store = useStore();
+      this.store = store;
     }
   }
   </script>

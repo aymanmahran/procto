@@ -141,11 +141,11 @@ export class AnswerableQuestion extends QuestionDecorator {
 
     async setAnswer(answer: string): Promise<boolean> {
         this.answer = answer;
-        return Promise.resolve(true);
+        return true;
     }
 
     async getAnswer(): Promise<string> {
-        return Promise.resolve(this.answer);
+        return this.answer;
     }
 }
 
@@ -166,11 +166,11 @@ export class MarkableQuestion extends QuestionDecorator {
     }
 
     async getMark(): Promise<number> {
-        return Promise.resolve(this.mark);
+        return this.mark;
     }
 
     async getAnswer(): Promise<string> {
-        return Promise.resolve(this.answer);
+        return this.answer;
     }
 }
 

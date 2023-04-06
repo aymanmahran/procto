@@ -9,10 +9,10 @@
       </div>
 
 
-      <div style="margin:auto">
+      <div style="margin:auto;">
         <div class="button" @click="$emit('logout')">Logout</div>
-        <div style="padding-top:20px;"> Copyright &copy; 2023</div>
-        <div style="text-align: center; padding:10px"> Procto</div>
+        <div style="font-size: 14px; color: #fff; padding-top:20px;"> Copyright &copy; 2023</div>
+        <div style="font-size: 14px; color: #fff; text-align: center; padding:5px"> Procto</div>
       </div>
 
     </div>
@@ -99,7 +99,7 @@
   .button {
     display: flex;
     min-height: 40px;
-    font-size: 14px;
+    font-size: 16px;
     width: 70px;
     color: rgb(218, 218, 218);
     border-radius: 7px;

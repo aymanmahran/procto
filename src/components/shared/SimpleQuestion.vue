@@ -4,7 +4,6 @@
         <p style="font-size:20px" @click.right.prevent @paste="onCopyPaste" @copy="onCopyPaste" @copy.prevent @paste.prevent> {{ questionProps.prompt }}</p>
         <LongAnswerQuestion @update="update" :number="questionProps.number" :mutable="mutable" :answer="questionProps.answer" v-if="questionProps.type === 'long'"/>
         <MultipleChoiceQuestion :options="questionProps.options" :number="questionProps.number" :mutable="mutable" :answer="questionProps.answer" v-else-if="questionProps.type === 'mcq'"/>
-
     </div>
 </template>
 
@@ -31,7 +30,9 @@
         },
         methods: {
             update(number, ans) {
-                this.question[number - 1].setAnswer(ans);
+                //console.log(number)
+                //console.log(this.question);
+                if(this.mutable) this.question.setAnswer(ans);
                 console.log(number, ans);
                 // this.$emit('update', number, ans);
             },

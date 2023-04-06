@@ -1,9 +1,9 @@
 <template>
-  <router-link :to="`/view-assessment?assessment=`+assessment+`&student=`+student.id">
+  <router-link :to="`/view-assessment?assessment=`+assessment+`&student=`+student.username">
     <div class="student-item">
       <div style="text-align:left; margin-left: 50px"> {{ student.firstname }}</div>
       <div style="text-align:left"> {{ student.lastname }}</div>
-      <div style="text-align:center"> {{ student.grade }}</div>
+      <div style="text-align:center"> {{ student.grade == -1 ? "Not graded" : `${student.grade}/20` }}</div>
     </div>
   </router-link>
 </template>

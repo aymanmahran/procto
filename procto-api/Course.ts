@@ -1,6 +1,6 @@
 import Student from './Student';
 import User from './User';
-import { Assessment, SimpleAssessment } from './Assessment';
+import { AnswerableAssessment, Assessment, ImmutableAssessment, MarkableAssessment, SimpleAssessment } from './Assessment';
 import AssessmentCabinet from './AssessmentCabinet';
 import { Email, Title, ID } from './types';
 import { AWS } from './AWS';
@@ -23,7 +23,7 @@ interface ProfessorCourseAccess extends Course {
     students: Student[];
     getStudents(): Promise<Student[]>;
     addStudent(email: Email): Promise<boolean>;
-    addAssessment(assessment: Assessment): Promise<boolean>;
+    addAssessment(id: ID): Promise<boolean>;
 }
 
 class SimpleCourse implements Course {
@@ -41,8 +41,13 @@ class SimpleCourse implements Course {
         this.assessments = [];
         try {
             const result = await AWS.API.get('ProctoApi', `/course/${this.id}`, {});
-            JSON.parse(result[0].assessments ?? "[]").forEach((assessment: string) => this.assessments.push(new SimpleAssessment(assessment)));
-            this.assessments.forEach(assessment => assessment.init());
+            const ids = JSON.parse(result[0].assessments ?? "[]");
+            for (let id of ids)
+                this.assessments.push(new SimpleAssessment(id));
+
+            for (let assessment of this.assessments)
+                await assessment.init();
+
             this.title = result[0].title;
             return true;
         }
@@ -53,154 +58,97 @@ class SimpleCourse implements Course {
     }
 
     async getTitle(): Promise<Title> {
-        if (!await this.init()) return Promise.reject();
-        console.log(this.title);
+        if (!this.title) await this.init();
         return this.title;
     }
 
     async getAssessments(): Promise<Assessment[]> {
-        if (!await this.init()) return Promise.reject();
+        if (!this.title) await this.init();
         return this.assessments;
     }
 
     async getUpcomingAssessments(): Promise<Assessment[]> {
-        if (!await this.init()) return Promise.reject();
-        return this.assessments.filter(async (assessment) => await assessment.getStartDate() > Math.floor(Date.now() / 1000));
-        // return [
-        //     new Assessment({
-        //         id: 1,
-        //         name: 'Midterm 1',
-        //         course: 'ECE 5500',
-        //         date: 'March 20th, 2023',
-        //         time: '12:30 PM',
-        //         grade: 89
-        //     }),
-        //     new Assessment({
-        //         id: 2,
-        //         name: 'Quiz 3',
-        //         course: 'ECE 5400',
-        //         date: 'March 22th, 2023',
-        //         time: '11:00 AM',
-        //         grade: null
-        //     })
-        // ];
+        return Promise.reject();
     }
 
     async getPastAssessments(): Promise<Assessment[]> {
-        if (!await this.init()) return Promise.reject();
-        return this.assessments.filter(async (assessment) => await assessment.getStartDate() < Math.floor(Date.now() / 1000));
-        // return [
-        //     new Assessment({
-        //         id: 1,
-        //         name: 'Midterm 1',
-        //         course: 'ECE 5500',
-        //         date: 'March 20th, 2023',
-        //         time: '12:30 PM',
-        //         grade: 89
-        //     }),
-        //     new Assessment({
-        //         id: 2,
-        //         name: 'Quiz 3',
-        //         course: 'ECE 5400',
-        //         date: 'March 22th, 2023',
-        //         time: '11:00 AM',
-        //         grade: null
-        //     })
-        // ];
+        return Promise.reject();
     }
 }
 
 export class StudentCourse extends SimpleCourse implements StudentCourseAccess {
-    constructor(id: ID) {
+    username: string;
+
+    constructor(id: ID, username: string) {
         super(id);
+        this.username = username;
     }
 
-    // async submitAssessment(student: Student, assessment: Assessment): Promise<boolean> {
-    //     try {
-    //         const id = uuidv4();
-    //         AWS.API.put('ProctoApi', '/response', {
-    //             body: {
-    //                 id: id,
-    //                 answers: JSON.stringify(assessment.getAnswersObject()),
-    //                 submitted: Math.floor(Date.now() / 1000)
-    //             }
-    //         });
+    async getPastAssessments(): Promise<Assessment[]> {
+        const assessments = await this.getAssessments();
 
-    //         assessment
+        const now = Math.floor(Date.now() / 1000);
+        const ret = [];
+        for (let assessment of assessments) {
+            const date = await assessment.getStartDate();
+            const duration = await assessment.getDuration();
+            const doneAssessment = new ImmutableAssessment(assessment, this.username);
+            const done = await doneAssessment.isDone();
 
-    //         AWS.API.post('ProctoApi', '/assessment', {
-    //             body: {
-    //                 id: id,
-    //                 responses: assessment.getAnswersObject()),
-    //                 submitted: Math.floor(Date.now() / 1000)
-    //             }
-    //         });
+            if ((date + duration) < now || done)
+                ret.push(doneAssessment);
+        }
+        return ret;
+    }
 
-    //         return true;
-    //     }
-    //     catch (err: any) {
-    //         console.log(err);
-    //         return false;
-    //     };
-    // }
+    async getUpcomingAssessments(): Promise<Assessment[]> {
+        const now = Math.floor(Date.now() / 1000);
+        const ret = [];
+        for (let assessment of this.assessments) {
+            const date = await assessment.getStartDate();
+            const duration = await assessment.getDuration();
+            const doneAssessment = new ImmutableAssessment(assessment, this.username);
+            const done = await doneAssessment.isDone();
 
-    // async getAssessments() {
-    //     return [
-    //         {
-    //             id: 1,
-    //             name: 'Midterm 1',
-    //             course: 'ECE 5500',
-    //             date: 'March 20th, 2023',
-    //             time: '12:30 PM',
-    //             grade: 89
-    //         },
-    //         {
-    //             id: 2,
-    //             name: 'Quiz 3',
-    //             course: 'ECE 5400',
-    //             date: 'March 22th, 2023',
-    //             time: '11:00 AM',
-    //             grade: null
-    //         }
-    //     ];
-    // }
-    // async getStudentResponses(assessment: any) {
-    //     return [
-    //         {
-    //             student: {
-    //                 firstname: "Ayman",
-    //                 lastname: "Mahran",
-    //                 id: "202045746",
-    //                 grade: "20%"
-    //             },
-    //             assessment: {
-    //                 id: '2321'
-    //             }
-    //         }
-    //     ];
-    // }
+            if ((now < date) || (now > date && now < (date + duration) && !done))
+                ret.push(new AnswerableAssessment(assessment, this.username));
+        }
+        return ret;
+    }
 }
 
 export class ProfessorCourse extends SimpleCourse implements ProfessorCourseAccess {
 
     students: Student[];
+    studentUsernames: string[];
+    assessmentIds: string[];
 
     constructor(id: ID) {
         super(id);
         this.students = [];
+        this.studentUsernames = [];
+        this.assessmentIds = [];
     }
 
     async init(): Promise<boolean> {
         this.assessments = [];
         this.students = [];
+        this.studentUsernames = [];
+        this.assessmentIds = [];
+
 
         try {
             const result = await AWS.API.get('ProctoApi', `/course/${this.id}`, {});
-            console.log("This is course", result[0]);
             this.title = result[0].title;
+
             JSON.parse(result[0].students ?? "[]").forEach((student: string) => this.students.push(new Student(new User(student))));
             JSON.parse(result[0].assessments ?? "[]").forEach((assessment: string) => this.assessments.push(new SimpleAssessment(assessment)));
-            this.assessments.forEach(assessment => assessment.init());
+
+            this.studentUsernames = JSON.parse(result[0].students ?? "[]");
+            this.assessmentIds = JSON.parse(result[0].assessments ?? "[]");
+
+            for (let assessment of this.assessments)
+                await assessment.init();
 
             return true;
         }
@@ -212,9 +160,10 @@ export class ProfessorCourse extends SimpleCourse implements ProfessorCourseAcce
 
     private async update(props: any): Promise<boolean> {
         try {
+            const result = await AWS.API.get('ProctoApi', `/course/${this.id}`, {});
             await AWS.API.put('ProctoApi', '/course', {
                 body: {
-                    id: this.id,
+                    ...result[0],
                     ...props
                 }
             });
@@ -227,75 +176,74 @@ export class ProfessorCourse extends SimpleCourse implements ProfessorCourseAcce
     }
 
     async getStudents(): Promise<Student[]> {
-        if (!await this.init()) return Promise.reject();
+        if (this.students.length == 0) await this.init();
         return this.students;
     }
 
     async getAssessments(): Promise<Assessment[]> {
-        if (!await this.init()) return Promise.reject();
+        if (this.students.length == 0) await this.init();
         return this.assessments;
-        // return [
-        //     {
-        //         id: 1,
-        //         name: 'Midterm 1',
-        //         course: 'ECE 5500',
-        //         date: 'March 20th, 2023',
-        //         time: '12:30 PM',
-        //         grade: 89
-        //     },
-        //     {
-        //         id: 2,
-        //         name: 'Quiz 3',
-        //         course: 'ECE 5400',
-        //         date: 'March 22th, 2023',
-        //         time: '11:00 AM',
-        //         grade: null
-        //     }
-        // ];
+    }
+
+    async getMarkableAssessment(assessment: string, username: string): Promise<Assessment> {
+        if (this.students.length == 0) await this.init();
+        let i = 0, ret = this.assessments[0];
+        for (let assessmentid of this.assessmentIds) {
+            if (assessmentid == assessment) {
+                ret = this.assessments[i];
+            }
+            i++;
+        }
+        return new MarkableAssessment(ret, username);
     }
 
     async addStudent(student: Email): Promise<boolean> {
-        if (!await this.init()) return Promise.reject();
+        if (this.students.length == 0) await this.init();
         this.students.push(new Student(new User(student)));
-        const usernames: string[] = [];
-        this.students.forEach(async (student) => usernames.push(await student.getUsername()));
-        return this.update({ students: JSON.stringify(usernames) });
-        //return Promise.reject();
+        this.studentUsernames.push(student);
+        return this.update({ students: JSON.stringify(this.studentUsernames) });
     }
 
-    async addAssessment(assessment: Assessment): Promise<boolean> {
-        if (!await this.init()) return Promise.reject();
-        this.assessments.push(assessment);
-        const ids: string[] = [];
-        this.assessments.forEach(async (student) => ids.push(await assessment.getId()));
-        return this.update({ assessments: JSON.stringify(ids) });
+    async addAssessment(id: ID): Promise<boolean> {
+        if (this.students.length == 0) await this.init();
+        this.assessmentIds.push(id);
+        await this.update({ assessments: JSON.stringify(this.assessmentIds) });
+        return await this.init();
     }
 
-    // async getStudentResponses(assessment: any) {
-    //     return [
-    //         {
-    //             student: {
-    //                 firstname: "Ayman",
-    //                 lastname: "Mahran",
-    //                 id: "202045746",
-    //                 grade: "20%"
-    //             },
-    //             assessment: {
-    //                 id: '2321'
-    //             }
-    //         }
-    //         ,
-    //         {
-    //             student: {
-    //                 firstname: "Youssef",
-    //                 lastname: "Aref",
-    //                 id: "201940505",
-    //                 grade: "30%"
-    //             },
-    //             assessment: {
-    //                 id: '2321'
-    //             }
-    //         }
-    //     ];
-    // }
+    async getStudentMarks(assessment: string) {
+        if (this.students.length == 0) await this.init();
+        const responses = [];
+        for (let username of this.studentUsernames) {
+            try {
+                const result = await AWS.API.get('ProctoApi', `/response/object/${username}/${assessment}`, {});
+                responses.push({
+                    student: username,
+                    marks: JSON.parse(result?.marks ?? "[]")
+                })
+            }
+            catch (err: any) {
+                console.log(err);
+            };
+        }
+        return responses;
+    }
+
+    async getStudentResponses(assessment: string) {
+        if (this.students.length == 0) await this.init();
+        const responses = [];
+        for (let username of this.studentUsernames) {
+            try {
+                const result = await AWS.API.get('ProctoApi', `/response/object/${username}/${assessment}`, {});
+                responses.push({
+                    student: username,
+                    result: JSON.parse(result?.answers ?? "[]")
+                })
+            }
+            catch (err: any) {
+                console.log(err);
+            };
+        }
+        return responses;
+    }
 }

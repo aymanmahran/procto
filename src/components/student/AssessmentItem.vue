@@ -42,10 +42,15 @@
         this.expanded = !this.expanded;
       },
       startAssessment() {
-        console.log("Fdsfdsfdsfd");
-        console.log(this.store);
-        this.store.state.selectedAssessment = this.assessment.assessment;
-        this.$router.push({name: 'assessment'});
+        const now = Math.floor(Date.now() / 1000);
+        if(this.assessment.timestamp > now){
+          alert("Assessment is not available yet!")
+        }
+        else {
+          console.log(this.store);
+          this.store.state.selectedAssessment = this.assessment.assessment;
+          this.$router.push({name: 'assessment'});
+        }
       }
     },
     created() {

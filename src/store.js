@@ -7,7 +7,11 @@ export default createStore({
         courseObjects: [],
         courseTitles: [],
         username: '',
-        selectedAssessment: null
+        selectedAssessment: null,
+        courseMap: null,
+        selectedCourse: null,
+        students: [],
+        setQuestions: []
     },
     mutations: {
 

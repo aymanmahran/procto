@@ -2,7 +2,7 @@
   <div class="assessment-window" v-if="isStudent">
     <div>
       <div class="timer-box">
-      <div style="width: 120px; margin:auto"><TimerWidget :time="time"/></div>
+      <div style="width: 120px; margin:auto"><TimerWidget :time="time.toString()"/></div>
       </div>
       <TakeAssessmentWindow @updateAnswers="updateAnswers" :questions="questions" :questionObjects="questionObjects"/>
     </div>
@@ -13,7 +13,7 @@
 
   <div class="assessment-window" v-else>
     <div>
-      <MarkAssessmentWindow @updateAnswers="updateAnswers" :questions="questions"/>
+      <MarkAssessmentWindow @updateAnswers="updateAnswers" :questions="questions" :questionObjects="questionObjects"/>
     </div>
     <div>
       <AssessmentSideBar @submit="submit" :name="name" :questions="questionsIndex"/>
@@ -55,35 +55,59 @@ export default {
       name: "",
       time: "",
       answers: [],
-      isStudent: true
+      isStudent: true,
+      currentAssessment: null
     }
   },
   async created() {
       const store = useStore();
-      const assessment = store.state.selectedAssessment;
-      this.isStudent = store.state.isStudent;
-      this.time = await assessment.getDuration();
-      this.questionObjects = await assessment.getQuestions();
-      this.name = await assessment.getTitle();
 
-      this.questions = [];
-      this.questionObjects.forEach(async (question, i) => {
-        const prompt = await question.getPrompt();
-        const type = await question.getType();
-        this.questions.push({
-          number: i+1,
-          prompt: prompt,
-          type: type,
-          answer: ""
-        })
-      });
+      let assessment = store.state.selectedAssessment;
 
-      this.questionsIndex = this.questions.map((question, i) => (i+1));
-      this.answers = new Array(this.questionsIndex.length + 1);
+      if(!store.state.isStudent) {
+        console.log(this.$route.query.assessment, this.$route.query.student);
+        assessment = await store.state.selectedCourse.getMarkableAssessment(this.$route.query.assessment, this.$route.query.student);
+      }
+        this.currentAssessment = assessment;
+        this.isStudent = store.state.isStudent;
+        this.time = await assessment.getDuration();
+        this.questionObjects = await assessment.getQuestions();
+        this.name = await assessment.getTitle();
+
+        this.questions = [];
+        let i = 1;
+        let answer = '';
+
+        for(let question of this.questionObjects) {
+          const prompt = await question.getPrompt();
+          const type = await question.getType();
+          const weight = await question.getWeight();
+          if(!store.state.isStudent)
+            answer = await question.getAnswer();
+
+          this.questions.push({
+            number: i,
+            prompt: prompt,
+            type: type,
+            answer: answer,
+            weight: weight
+          })
+          this.questionsIndex.push(i);
+          i++;
+        }
+
+        this.answers = new Array(this.questionsIndex.length + 1);
+
+        if(store.state.isStudent)
+          await assessment.startAssessment();
+
+        console.log(this.questionObjects);
+      
   },
   methods: {
     async submit() {
-      await store.state.selectedAssessment.submitAssessment();
+      if(this.isStudent) await this.currentAssessment.submitAssessment();
+      else await this.currentAssessment.submitMarks();
       this.$router.push({name: 'home'});
     },
     updateAnswers(answers) {

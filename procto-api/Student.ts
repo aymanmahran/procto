@@ -18,8 +18,9 @@ export default class Student extends User {
         try {
             const result = await AWS.API.get('ProctoApi', `/student/${this.username}`, {});
             this.id = result[0].id;
-            JSON.parse(result[0].courses ?? "[]").forEach((courseId: ID) => this.courses.push(new StudentCourse(courseId)));
-            this.courses.forEach(course => course.init());
+            JSON.parse(result[0].courses ?? "[]").forEach((courseId: ID) => this.courses.push(new StudentCourse(courseId, this.username)));
+            for (let course of this.courses)
+                await course.init();
             return true;
         }
         catch (err: any) {
@@ -29,35 +30,13 @@ export default class Student extends User {
     }
 
     async getId(): Promise<string> {
-        if (!await this.initSt()) return Promise.reject();
+        if (!this.id) await this.initSt();
         return this.id;
     }
 
     async getCourses(): Promise<Course[]> {
-        if (!await this.initSt()) return Promise.reject();
+        if (!this.id) await this.initSt();
         return this.courses;
-        // const apiName = 'MyApiName';
-        // const path = '/path';
-        // const myInit = {
-        //     headers: {
-        //         Authorization: `Bearer ${(await Auth.currentSession())
-        //             .getIdToken()
-        //             .getJwtToken()}`
-        //     }
-        // };
-
-        // API.get(apiName, path, myInit)
-        //     .then((response) => {
-        //         return response.body;
-        //     })
-        //     .catch((error) => {
-        //         console.log(error.response);
-        //         return {};
-        //     });
-
-        // var course: Course = new StudentCourse('ECE 5500', this, new AssessmentCabinet());
-        // return [course];
-        //feturn ['ECE 5010', 'ECE 5200', 'ECE 5400', 'ECE 5500'];
     }
 
     async startAssessment(): Promise<void> {

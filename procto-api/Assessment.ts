@@ -19,6 +19,7 @@ export class SimpleAssessment implements Assessment {
     duration: number;
     weight: number;
     questions: Question[];
+    questionsObj: any;
     id: ID;
 
     constructor(id: ID) {
@@ -28,6 +29,7 @@ export class SimpleAssessment implements Assessment {
         this.duration = -1;
         this.weight = -1;
         this.questions = [];
+        this.questionsObj = null;
 
     }
 
@@ -40,10 +42,8 @@ export class SimpleAssessment implements Assessment {
             this.duration = result[0].duration;
             this.weight = result[0].weight;
             let i = 1;
-            const arr = JSON.parse(result[0].questions);
-            // const d = JSON.stringify([{ type: "long", prompt: "What is life?" }, { type: "long", prompt: "What is cat sound?" }]);
-            // console.log(d);
-            // console.log(JSON.parse(d));
+            const arr = JSON.parse(result[0]?.questions ?? '[]');
+            this.questionsObj = arr;
             arr.forEach((question: any) => {
                 if (question.type == 'mcq')
                     this.questions.push(new MultipleChoice(question.prompt, question.options, question.weight, i));
@@ -54,55 +54,61 @@ export class SimpleAssessment implements Assessment {
             return true;
         }
         catch (err: any) {
-            console.log(err);
+            console.log(err.response.data);
             return false;
         };
     }
 
     private async update(props: any): Promise<boolean> {
         try {
+            const result = await AWS.API.get('ProctoApi', `/assessment/${this.id}`, {});
             await AWS.API.put('ProctoApi', '/assessment', {
                 body: {
-                    id: this.id,
+                    ...result[0],
                     ...props
                 }
             });
             return true;
         }
         catch (err: any) {
-            console.log(err);
+            console.log(err.response.data);
             return false;
         };
     }
 
     async getTitle(): Promise<string> {
-        if (!await this.init()) return Promise.reject();
+        if (!this.title) await this.init();
         return this.title;
     }
 
     async getWeight(): Promise<number> {
-        if (!await this.init()) return Promise.reject();
+        if (!this.title) await this.init();
         return this.weight;
     }
 
     async getDuration(): Promise<number> {
-        if (!await this.init()) return Promise.reject();
+        if (!this.title) await this.init();
         return this.duration;
     }
 
     async getStartDate(): Promise<Date> {
-        if (!await this.init()) return Promise.reject();
+        if (!this.title) await this.init();
         return this.startDate;
     }
 
     async getId(): Promise<ID> {
-        if (!await this.init()) return Promise.reject();
+        if (!this.title) await this.init();
         return this.id;
     }
 
     async getQuestions(): Promise<Question[]> {
-        if (!await this.init()) return Promise.reject();
+        if (!this.title) await this.init();
         return this.questions;
+    }
+
+    async getQuestionsObj(): Promise<any> {
+        if (!this.title) await this.init();
+        return this.questionsObj;
     }
 
     async setTitle(title: string): Promise<boolean> {
@@ -125,15 +131,15 @@ export class SimpleAssessment implements Assessment {
         return this.update({ duration: duration });
     }
 
-    async setQuestions(questions: Question[]): Promise<boolean> {
-        this.questions = questions;
-        const questionObjects: any[] = [];
-        this.questions.forEach(async (question) => questionObjects.push(await question.getObject()));
-        return this.update({ questions: JSON.stringify(questionObjects) });
+    async setQuestions(questions: any[]): Promise<boolean> {
+        this.questions = [];
+        console.log(questions);
+        questions.forEach(question => this.questions.push(new LongAnswer(question.prompt, question.weight, question.number)));
+        return this.update({ questions: JSON.stringify(this.questions) });
     }
 
-    async addQuestion(question: Question): Promise<boolean> {
-        this.questions.push(question);
+    async addQuestion(question: any): Promise<boolean> {
+        this.questions.push(new LongAnswer(question.prompt, question.weight, question.number));
         const questionObjects: any[] = [];
         this.questions.forEach(async (question) => questionObjects.push(await question.getObject()));
         return this.update({ questions: JSON.stringify(questionObjects) });
@@ -200,13 +206,14 @@ export class AnswerableAssessment extends AssessmentDecorator {
 
     async startAssessment(): Promise<boolean> {
         const startDate = Math.floor(Date.now() / 1000);
-        // const id = uuidv4();
+        const id = await this.assessment.getId();
 
         try {
+            console.log(id, this.username);
             await AWS.API.post('ProctoApi', '/response', {
                 body: {
                     student: this.username,
-                    assessment: this.assessment.getId(),
+                    assessment: id,
                     started: startDate
                 }
             });
@@ -220,13 +227,16 @@ export class AnswerableAssessment extends AssessmentDecorator {
 
     async submitAssessment(): Promise<boolean> {
         const submitDate = Math.floor(Date.now() / 1000);
+        const id = await this.assessment.getId();
+        const result = await AWS.API.get('ProctoApi', `/response/object/${this.username}/${id}`, {});
+
         try {
+            const answers = await this.getAnswers();
             await AWS.API.put('ProctoApi', '/response', {
                 body: {
-                    student: this.username,
-                    assessment: this.assessment.getId(),
+                    ...result,
                     submitted: submitDate,
-                    answers: JSON.stringify(this.getAnswers())
+                    answers: JSON.stringify(answers)
                 }
             });
             return true;
@@ -256,10 +266,11 @@ export class AnswerableAssessment extends AssessmentDecorator {
             await this.getQuestions();
 
         const answers: any[] = [];
-        this.questions.forEach(async (question) => {
+        for (let question of this.questions) {
             const ans = await question.getAnswer();
             answers.push(ans);
-        });
+            console.log("Ans", ans);
+        }
         return answers;
     }
 }
@@ -268,11 +279,13 @@ export class MarkableAssessment extends AssessmentDecorator {
 
     mark: number;
     username: string;
+    questions: MarkableQuestion[];
 
     constructor(assessment: Assessment, username: string) {
         super(assessment);
         this.mark = -1;
         this.username = username;
+        this.questions = [];
     }
 
     async getQuestions(): Promise<MarkableQuestion[]> {
@@ -283,10 +296,13 @@ export class MarkableAssessment extends AssessmentDecorator {
 
         try {
             const result = await AWS.API.get('ProctoApi', `/response/object/${this.username}/${id}`, {});
-            JSON.parse(result?.answers ?? '[]').forEach((answer: string, index: number) => {
-                markableQuestions.push(new MarkableQuestion(questions[index], answer));
+            console.log(result);
+            const answers = JSON.parse(result?.answers ?? '[]');
+            questions.forEach((question: any, index: number) => {
+                markableQuestions.push(new MarkableQuestion(question, answers[index] ?? ''));
             });
-            return markableQuestions;
+            this.questions = markableQuestions;
+            return this.questions;
         }
         catch (err: any) {
             console.log(err);
@@ -296,12 +312,16 @@ export class MarkableAssessment extends AssessmentDecorator {
 
     async submitMarks(): Promise<boolean> {
         const submitDate = Math.floor(Date.now() / 1000);
+        const id = await this.assessment.getId();
+        const result = await AWS.API.get('ProctoApi', `/response/object/${this.username}/${id}`, {});
+
         try {
+            const marks = await this.getMarks();
             await AWS.API.put('ProctoApi', '/response', {
                 body: {
-                    student: this.username,
-                    assessment: this.assessment.getId(),
-                    marks: JSON.stringify(this.getMarks())
+                    ...result,
+                    submitted: submitDate,
+                    marks: JSON.stringify(marks)
                 }
             });
             return true;
@@ -323,11 +343,14 @@ export class MarkableAssessment extends AssessmentDecorator {
     }
 
     private async getMarks(): Promise<any> {
-        const questions = await this.getQuestions();
+        if (this.questions.length == 0)
+            await this.getQuestions();
+
         const marks: any[] = [];
-        for (let question of questions) {
-            const mark = await question.getMark();
-            marks.push(mark);
+        for (let question of this.questions) {
+            const ans = await question.getMark();
+            marks.push(ans);
+            console.log("Ans", ans);
         }
         return marks;
     }
@@ -342,6 +365,19 @@ export class ImmutableAssessment extends AssessmentDecorator {
         this.username = username;
     }
 
+    async isDone(): Promise<boolean> {
+        const id = await this.assessment.getId();
+        try {
+            const result = await AWS.API.get('ProctoApi', `/response/object/${this.username}/${id}`, {});
+            if (result?.answers) return true;
+            else return false;
+        }
+        catch (err: any) {
+            console.log(err);
+            return false;
+        };
+    }
+
     async getQuestions(): Promise<ImmutableQuestion[]> {
         const questions = await this.assessment.getQuestions();
         const immutableQuestions: ImmutableQuestion[] = [];
@@ -349,9 +385,9 @@ export class ImmutableAssessment extends AssessmentDecorator {
         console.log(id);
         try {
             const result = await AWS.API.get('ProctoApi', `/response/object/${this.username}/${id}`, {});
+            const marks = JSON.parse(result.marks ?? '[]');
             JSON.parse(result?.answers ?? '[]').forEach((answer: string, index: number) => {
-                console.log(JSON.parse(result.marks)[index]);
-                immutableQuestions.push(new ImmutableQuestion(questions[index], answer, JSON.parse(result.marks)[index]));
+                immutableQuestions.push(new ImmutableQuestion(questions[index], answer, marks.length ? marks[index] : null));
             });
             return immutableQuestions;
         }
@@ -376,54 +412,3 @@ export class ImmutableAssessment extends AssessmentDecorator {
         return finalMark;
     }
 }
-
-// export default class Assessment {
-//     props: any;
-//     constructor(props: any) {
-//         this.props = props;
-//     }
-
-//     async getQuestions() {
-//         return [{
-//             number: "1",
-//             weight: "10",
-//             type: 'long-answer',
-//             prompt: 'What is life?',
-//             answer: "idk"
-//         },
-//         {
-//             number: "2",
-//             weight: "5",
-//             type: 'long-answer',
-//             prompt: 'What sound do cats make?',
-//             answer: "meow"
-//         },
-//         {
-//             number: "3",
-//             weight: "1",
-//             type: 'multiple-choice',
-//             prompt: 'Which of the following is an animal?',
-//             options: [
-//                 {
-//                     number: "1",
-//                     text: 'Cat'
-//                 },
-//                 {
-//                     number: "2",
-//                     text: 'Dog'
-//                 },
-//                 {
-//                     number: "3",
-//                     text: 'Apple'
-//                 }
-//             ]
-//         }];
-//     }
-//     async getName() {
-//         return this.props.name;
-//     }
-
-//     async getDuration() {
-//         return "360";
-//     }
-// }

@@ -1,17 +1,18 @@
 <template>
   <div v-if="isStudent" class="home">
-    <!-- <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App Student" /> -->
-    <div><SideBar :name = "user.username" :courses = "courseTitles" @selectCourse="updateCourseSelection" @logout="logout"/></div>
-    <div v-if="selected == 2"><AssessmentList :courseTitle = "selectedCourse" :assessmentObjects = "assessments"/></div>
+    <div><SideBar :name = "name" :courses = "courseTitles" @selectCourse="updateCourseSelection" @logout="logout"/></div>
+    <div v-if="selected == 2"><AssessmentList :courseTitle = "selectedCourse" :pastAssessments = "pastAssessments" :upcomingAssessments = "upcomingAssessments"/></div>
     <div v-else-if="selected == 1"> <LoadingWidget></LoadingWidget> </div>    
     <div v-else-if="selected == 0"> <div style="color: #d1d1d1; margin:20px; margin-left:40px; margin-right:30px;font-size: 24px; font-weight: bold"> Select a course to view assessments information...</div> </div>
   </div>
   <div v-else class="home">
-    <div><SideBar :name = "user.username" :courses = "courseTitles" @selectCourse="updateCourseSelection" @logout="logout"/></div>
-    <div v-if="selected == 2" style="margin:20px; margin-left:40px; margin-right:30px">
-      <div class="courseTitle">
-        <p> {{ selectedCourse }} </p>
+    <div><SideBar :name = "name" :courses = "courseTitles" @selectCourse="updateCourseSelection" @logout="logout"/></div>
+    <div v-if="selected == 2" style="margin-top: 40px; margin-left:40px; margin-right:30px">
+      <div style="display: grid; grid-template-columns: 1fr 150px; height:70px">
+        <div class="courseTitle">
+          {{ selectedCourse }}
+        </div>
+        <div class="button" @click="this.$router.push({name: 'newassessment'});">Add Assessment</div>
       </div>
       <CourseDetails :titles="tabs" @selectTab="updateTabSelection"/>
       <CourseStudents :course="selectedCourseObject" title="Students" v-show="selectedTab == 'Students'"/>
@@ -32,9 +33,7 @@ import SideBar from "@/components/shared/SideBar.vue";
 import LoadingWidget from "@/components/shared/LoadingWidget.vue";
 import { ProctoAPI, User, Student, Professor } from "procto-api";
 import { useStore } from 'vuex';
-import { API } from "aws-amplify"; 
-// import { store } from "../store";
-// import { provide } from "vue";
+import { API } from "aws-amplify";
 
 export default {
   name: "HomeView",
@@ -52,11 +51,15 @@ export default {
   },
   data() {
     return {
+      store: null,
+      name: '',
       userObj: null,
       isStudent: false,
       courseTitles: [],
       courseObjects: [],
-      assessments: [],
+      courseMap: null,
+      pastAssessments: [],
+      upcomingAssessments: [],
       tabs: ['Students', 'Assessments'],
       selectedCourse: "",
       selectedCourseObject: null,
@@ -66,48 +69,71 @@ export default {
   },
   methods: {
     async updateCourseSelection(courseName) {
+      console.log(courseName);
+
       this.selected = 1;
+      this.store.state.students = [];
 
+      this.pastAssessments = [];
+      this.upcomingAssessments = [];
       this.selectedCourse = courseName;
-      this.courseTitles.forEach((course, i) => {
-        if(course == courseName)
-        this.selectedCourseObject = this.courseObjects[i]
-      });
+      this.selectedCourseObject = this.courseMap.get(courseName);
 
-      this.assessments = await this.selectedCourseObject.getAssessments();
+      this.store.state.selectedCourse = this.selectedCourseObject;
+      
+      if(!this.isStudent) {
+        this.selected = 2;
+        return;
+      }
 
-      // console.log(this.assessments);
+      const pastAssessmentObjects = await this.selectedCourseObject.getPastAssessments();
+      const upcomingAssessmentObjects = await this.selectedCourseObject.getUpcomingAssessments();
+
+      for (let assessment of pastAssessmentObjects) {
+        const id = await assessment.getId();
+        const title = await assessment.getTitle();
+        const date = await assessment.getStartDate();
+        const grade = await assessment.getFinalMark();
+        
+        const obj = {
+          assessment: assessment,
+          id: id,
+          title: title,
+          course: this.selectedCourse,
+          grade: grade,
+          timestamp: date,
+          date: (new Date(date * 1000)).toDateString(),
+          time: (new Date(date * 1000)).toLocaleString().split(',')[1].split(':').slice(0, 2).join(":")
+        };
+
+        this.pastAssessments.push(obj);
+      }
+
+      for (let assessment of upcomingAssessmentObjects) {
+        const id = await assessment.getId();
+        const title = await assessment.getTitle();
+        const date = await assessment.getStartDate();
+        
+        const obj = {
+          assessment: assessment,
+          id: id,
+          title: title,
+          course: this.selectedCourse,
+          grade: undefined,
+          timestamp: date,
+          date: (new Date(date * 1000)).toDateString(),
+          time: (new Date(date * 1000)).toLocaleString().split(',')[1].split(':').slice(0, 2).join(":")
+        };
+
+        this.upcomingAssessments.push(obj);
+      }
+
+      this.pastAssessments = this.pastAssessments.sort((a, b) => b.timestamp - a.timestamp);
+      this.upcomingAssessments = this.upcomingAssessments.sort((a, b) => b.timestamp - a.timestamp);
 
       this.selected = 2;
 
       console.log(this.selectedCourse);
-
-      // var assessments = [
-      //   {
-      //     id: 1,
-      //     name: 'Midterm 1',
-      //     course: 'ECE 5500',
-      //     date: 'March 20th, 2023',
-      //     time: '12:30 PM',
-      //     grade: 89
-      //   }, 
-      //   {
-      //     id: 2,
-      //     name: 'Quiz 3',
-      //     course: 'ECE 5400',
-      //     date: 'March 22th, 2023',
-      //     time: '11:00 AM',
-      //     grade: null
-      //   }
-      // ];
-      // const interval = setInterval(() => {
-      //   if (!assessments.length) {
-      //     clearInterval(interval)
-      //   } else {
-      //     this.assessments.push(assessments.shift())
-      //   }
-      // }, 200);
-      //assessments.forEach(item => this.assessments.push(item));
     },
     updateTabSelection(tab) {
       console.log(tab);
@@ -126,13 +152,11 @@ export default {
     if (await user.getType() == 'student') {
       store.state.user = new Student(user);
       store.state.isStudent = true;
-      // await user.update(props.user, 'student', await store.state.user.getId());
     }
 
     else if (await user.getType() == 'professor') {
       store.state.user = new Professor(user);
       store.state.isStudent = false;
-      // await user.update(this.user, 'professor', undefined);
     }
 
     else {
@@ -146,25 +170,27 @@ export default {
     }
 
     store.state.courseObjects = await store.state.user.getCourses();
-    
-    // console.log("Course", this.courseObjects);
-
-    // console.log("Atts", JSON.stringify(this.user.attributes));
 
     store.state.courseTitles = [];
-    store.state.courseObjects.forEach(async (course) => {
+    store.state.courseMap = new Map();
+    const arr = new Array();
+    for(let course of store.state.courseObjects){
         const title = await course.getTitle();
-        store.state.courseTitles.push(title);
-    });
-    
+        arr.push(title);
+        store.state.courseMap.set(title, course);
+    }
+    store.state.courseTitles = arr.sort((a, b) => a.localeCompare(b));
   },
   async created() {
     const store = useStore();
+    this.store = store;
     this.isStudent = store.state.isStudent;
     this.courseObjects = store.state.courseObjects;
     this.courseTitles = store.state.courseTitles;
+    this.name = this.user.attributes.given_name.split(' ')[0];
     store.state.username = this.user.attributes.email;
-
+    this.courseMap = store.state.courseMap;
+    console.log(this.courseTitles);
   }
 };
 </script>
@@ -190,4 +216,23 @@ export default {
     margin-bottom: 10px;
   }
 
+  .button {
+    display: flex;
+    height: 40px;
+    font-size: 16px;
+    width: 150px;
+    color: #2c3f55;
+    font-weight: bold;
+    border-radius: 7px;
+    background-color:#d1d1d1;
+    align-items: center;
+    justify-content:center;
+    cursor: pointer;
+    transition: all .15s ease-in;
+    margin: 0 auto;
+  }
+
+  .button:hover { 
+      background: #a0a0a0;
+  }
 </style>
