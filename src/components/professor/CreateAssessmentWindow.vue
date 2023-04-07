@@ -2,10 +2,10 @@
     <div style="margin: 40px">
         <div style="display: grid; grid-template-columns: 1fr 150px;">
             <textarea class="textbox" style="width: calc(100% - 50px)" v-model="title" placeholder="Title"></textarea>
-            <textarea class="textbox" style="width: 100px" v-model="weight" placeholder="Weight"></textarea>
+            <textarea class="textbox" style="width: 100px" v-model="weight" placeholder="Mark"></textarea>
         </div>
         <div style="display: grid; grid-template-columns: 230px 230px 230px; margin-top: 20px">
-            <textarea class="textbox" style="width: 220px" v-model="date" placeholder="Date (DD-MM-YYYY)"></textarea>
+            <textarea class="textbox" style="width: 220px" v-model="date" placeholder="Date (YYYY-MM-DD)"></textarea>
             <textarea class="textbox" style="width: 220px" v-model="time" placeholder="Time (HH:MM)"></textarea>
             <textarea class="textbox" style="width: 220px" v-model="duration" placeholder="Duration (minutes)"></textarea>
 
@@ -89,15 +89,17 @@ export default {
     methods: {
         add(number) {
             this.questions.splice(number, 0, {prompt: "", weight: "", number: number + 1})
+            console.log(this.questions);
             this.questions = this.questions.map((q, i) => i > number ? {...q, number: q.number + 1} : q);
-            this.$emit('update', this.questions);
             this.store.state.setQuestions = this.questions;
+            this.$emit('update', this.questions.length);
+
         },
         remove(number) {
             this.questions = this.questions.filter((_, i) => i != (number-1));
             this.questions = this.questions.map((q, i) => i >= number-1 ? {...q, number: q.number - 1} : q);
-            this.$emit('update', this.questions);
             this.store.state.setQuestions = this.questions;
+            this.$emit('update', this.questions.length);
         }
     },
     created() {

@@ -8,14 +8,14 @@ export interface Question {
 
 abstract class SimpleQuestion implements Question {
 
-    index: number;
+    number: number;
     prompt: string;
     weight: number;
 
     constructor(prompt: string, weight: number, index: number) {
         this.prompt = prompt;
         this.weight = weight;
-        this.index = index;
+        this.number = index;
     }
 
     getPrompt(): Promise<string> {
@@ -27,12 +27,12 @@ abstract class SimpleQuestion implements Question {
     }
 
     getNumber(): Promise<number> {
-        return Promise.resolve(this.index);
+        return Promise.resolve(this.number);
     }
 
     getObject(): Promise<any> {
         return Promise.resolve({
-            index: this.index,
+            number: this.number,
             prompt: this.prompt,
             weight: this.weight
         });
@@ -51,7 +51,7 @@ abstract class SimpleQuestion implements Question {
     }
 
     setNumber(index: number): Promise<boolean> {
-        this.index = index;
+        this.number = index;
         return Promise.resolve(true);
     }
 }

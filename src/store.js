@@ -11,7 +11,8 @@ export default createStore({
         courseMap: null,
         selectedCourse: null,
         students: [],
-        setQuestions: []
+        setQuestions: [],
+        visible: true
     },
     mutations: {
 

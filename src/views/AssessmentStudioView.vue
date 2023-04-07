@@ -56,10 +56,12 @@ export default {
         this.update = true;
         this.assessmentObject = await AssessmentFactory.get(this.$route.query.id);
         const date = await this.assessmentObject.getStartDate();
+        console.log(date);
         this.n = await this.assessmentObject.getTitle();
         this.w = await this.assessmentObject.getWeight();
         this.l = await this.assessmentObject.getDuration();
-        this.d = (new Date(Number(date) * 1000)).toLocaleString().split(',')[0];
+        this.l = Number(this.l) / 60;
+        this.d = (new Date(Number(date) * 1000)).toLocaleString().split(',')[0].split('/').reverse().join("-");
         this.t = (new Date(Number(date) * 1000)).toLocaleString().split(',')[1].split(':').slice(0, 2).join(":");
         this.q = await this.assessmentObject.getQuestionsObj();
         console.log(this.q);
@@ -73,7 +75,7 @@ export default {
       this.submit = true;
     },
     async sendQuestions(questions, title, weight, date, time, duration) {
-      console.log(questions);
+      console.log(date, time);
       await this.assessmentObject.setTitle(title);
       await this.assessmentObject.setWeight(weight);
       await this.assessmentObject.setStartDate(Math.floor(new Date(date + " " + time).getTime() / 1000));
@@ -84,10 +86,9 @@ export default {
       console.log(id);
       this.$router.push({name: 'home'});
     },
-    updateQuestions(q) {
-      this.setQuestions = q;
+    updateQuestions(n) {
       this.questionsIndex = [];
-      for(let i = 1; i <= q.length; i++) this.questionsIndex.push(i);
+      for(let i = 1; i <= n; i++) this.questionsIndex.push(i);
     }
   }
 };

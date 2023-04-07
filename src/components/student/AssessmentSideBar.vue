@@ -9,6 +9,13 @@
         <canvas id="photoTaken" ref="canvas" style = "margin-top: 30px;margin-left: 25px;" :width="220" :height="150"></canvas>
         <!-- <div style = "margin-top: 40px;margin-left: 25px; width: calc(100% - 50px); height: 150px; background-color: #000;"></div> -->
       </div>
+
+      <div id="cam-box" v-else-if="mark" style="width:100%; height: 400px; background-color: #330000;">
+        <ReportEntry report="Text copy/paste attempts:  1"></ReportEntry>
+        <ReportEntry report="Window switching attempts:  1"></ReportEntry>
+        <ReportEntry report="Face detection fail:  1"></ReportEntry>
+      </div>
+
       <div class="questions-list">
         <QuestionEntry @goTo="goTo" v-for="question in questions" :key="question" :questionNumber="question"></QuestionEntry>
       </div>
@@ -19,6 +26,7 @@
   
   <script>
   import QuestionEntry from '../shared/QuestionEntry.vue';
+  import ReportEntry from '../shared/ReportEntry.vue';
   import { useStore } from 'vuex';
   import * as faceapi from 'face-api.js';
   
@@ -30,10 +38,14 @@
       },
       questions: {
         type: Array,
+      },
+      mark: {
+        type: Boolean
       }
     },
     components: {
-      QuestionEntry
+      QuestionEntry,
+      ReportEntry
     },
     data() {
       return {

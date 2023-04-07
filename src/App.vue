@@ -10,6 +10,7 @@
 </script>
 
 <template>
+  <div v-if="vs" style="width: 100%; margin-top:10px; text-align: center; height: 120px; font-size: 70px; font-weight: bold; color:#7a0000"> Procto </div>
   <authenticator>
     <template v-slot="{ user }">
       <!-- <h1>Hello {{ user.username }}!</h1> -->
@@ -24,6 +25,26 @@
 </template>
 
 <script>
+
+import { useStore } from "vuex";
+export default {
+  data(){
+    return {
+      store: null,
+      v: true
+    }
+  },
+  computed: {
+    vs() {
+      return this.$store.state.visible;
+    },
+},
+  created() {
+    const store = useStore();
+    this.store = store;
+    this.v = store.state.visible;
+  }
+}
 
 </script>
 

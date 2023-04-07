@@ -199,16 +199,17 @@ export class ProfessorCourse extends SimpleCourse implements ProfessorCourseAcce
 
     async addStudent(student: Email): Promise<boolean> {
         if (this.students.length == 0) await this.init();
-        this.students.push(new Student(new User(student)));
+        // this.students.push(new Student(new User(student)));
         this.studentUsernames.push(student);
-        return this.update({ students: JSON.stringify(this.studentUsernames) });
+        await this.update({ students: JSON.stringify(this.studentUsernames) });
+        return this.init();
     }
 
     async addAssessment(id: ID): Promise<boolean> {
         if (this.students.length == 0) await this.init();
         this.assessmentIds.push(id);
         await this.update({ assessments: JSON.stringify(this.assessmentIds) });
-        return await this.init();
+        return this.init();
     }
 
     async getStudentMarks(assessment: string) {

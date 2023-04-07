@@ -117,8 +117,10 @@ export class SimpleAssessment implements Assessment {
     }
 
     async setStartDate(date: Date): Promise<boolean> {
+        console.log(this.startDate);
         this.startDate = date;
-        return this.update({ startDate: date });
+        console.log(date);
+        return this.update({ start: date });
     }
 
     async setWeight(weight: number): Promise<boolean> {
@@ -407,7 +409,7 @@ export class ImmutableAssessment extends AssessmentDecorator {
         let finalMark = 0;
         for (let question of questions) {
             const mark = await question.getMark();
-            finalMark += mark;
+            finalMark += Number(mark);
         }
         return finalMark;
     }

@@ -7,7 +7,7 @@
             <div style="text-align:right; margin-right: 50px"> Student ID</div>
         </div>
         <div v-if="selected == 0"> <StudentItem v-for="student in studentProps" :key="student.id" :student="student"></StudentItem> </div>
-        <div style="width: 100%; margin-top: 25%;" v-else-if="selected == 1"> <LoadingWidget></LoadingWidget> </div>
+        <div style="width: 100%; margin-top: 150px;" v-else-if="selected == 1"> <LoadingWidget></LoadingWidget> </div>
     </div>
 </template>
 
@@ -20,8 +20,11 @@ import { useStore } from "vuex";
 export default {
     name: "CourseStudents",
     props: {
-      course: {
-        type: Object
+        course: {
+            type: Object
+        },
+        update: {
+            type: Boolean
         }
     },
     components: {
@@ -30,6 +33,25 @@ export default {
     },
     watch: {
         async course() {
+            this.selected = 1;
+            this.studentsList = await this.course.getStudents();
+            this.studentProps = [];
+            for(let student of this.studentsList) {
+                const firstname = await student.getFirstname();
+                const lastname = await student.getLastname();
+                const email = await student.getEmail();
+                const id = await student.getId();
+
+                this.studentProps.push({
+                    firstname: firstname,
+                    lastname: lastname,
+                    email: email,
+                    id: id
+                });
+            }
+            this.selected = 0;
+        },
+        async update() {
             this.selected = 1;
             this.studentsList = await this.course.getStudents();
             this.studentProps = [];

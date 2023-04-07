@@ -14,7 +14,7 @@
         </div>
       </div>
       <div v-if="expanded" class="text" style="height: 30px; margin: 20px; margin-top:20; font-style: italic;">
-      {{ assessment.grade ? `Grade: ${assessment.grade}%`: "Not graded yet"}}
+      {{ assessment.grade ? `Grade: ${assessment.grade}/${assessment.weight ?? '20'}`: "Not graded yet"}}
       </div>
     </div>
   </template>

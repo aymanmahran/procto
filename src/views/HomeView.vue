@@ -8,14 +8,15 @@
   <div v-else class="home">
     <div><SideBar :name = "name" :courses = "courseTitles" @selectCourse="updateCourseSelection" @logout="logout"/></div>
     <div v-if="selected == 2" style="margin-top: 40px; margin-left:40px; margin-right:30px">
-      <div style="display: grid; grid-template-columns: 1fr 150px; height:70px">
+      <div style="display: grid; grid-template-columns: 1fr 160px 160px; height:70px">
         <div class="courseTitle">
           {{ selectedCourse }}
         </div>
+        <div class="button" @click="addStudent">Add Student</div>
         <div class="button" @click="this.$router.push({name: 'newassessment'});">Add Assessment</div>
       </div>
       <CourseDetails :titles="tabs" @selectTab="updateTabSelection"/>
-      <CourseStudents :course="selectedCourseObject" title="Students" v-show="selectedTab == 'Students'"/>
+      <CourseStudents :course="selectedCourseObject" :update="update" title="Students" v-show="selectedTab == 'Students'"/>
       <CourseAssessments :course="selectedCourseObject" title="Assessments" v-show="selectedTab == 'Assessments'"/>
     </div>
     <div v-else-if="selected == 1"> <LoadingWidget></LoadingWidget> </div>
@@ -64,7 +65,8 @@ export default {
       selectedCourse: "",
       selectedCourseObject: null,
       selectedTab: "",
-      selected: 0
+      selected: 0,
+      update: false
     }
   },
   methods: {
@@ -94,12 +96,14 @@ export default {
         const title = await assessment.getTitle();
         const date = await assessment.getStartDate();
         const grade = await assessment.getFinalMark();
+        const weight = await assessment.getWeight();
         
         const obj = {
           assessment: assessment,
           id: id,
           title: title,
           course: this.selectedCourse,
+          weight: weight,
           grade: grade,
           timestamp: date,
           date: (new Date(date * 1000)).toDateString(),
@@ -128,8 +132,8 @@ export default {
         this.upcomingAssessments.push(obj);
       }
 
-      this.pastAssessments = this.pastAssessments.sort((a, b) => b.timestamp - a.timestamp);
-      this.upcomingAssessments = this.upcomingAssessments.sort((a, b) => b.timestamp - a.timestamp);
+      this.pastAssessments = this.pastAssessments.sort((a, b) => a.timestamp - b.timestamp);
+      this.upcomingAssessments = this.upcomingAssessments.sort((a, b) => a.timestamp - b.timestamp);
 
       this.selected = 2;
 
@@ -138,6 +142,18 @@ export default {
     updateTabSelection(tab) {
       console.log(tab);
       this.selectedTab = tab;
+    },
+    async addStudent() {
+      let student = prompt("Please enter student email", "");
+      if (student == null || student == "") {
+        return;
+      }
+      else {
+        console.log(student);
+        await this.selectedCourseObject.addStudent(student);
+        this.update = !this.update;
+        //await this.updateCourseSelection(this.selectedCourse);
+      }
     },
     logout() {
       this.auth.signOut();
@@ -184,6 +200,7 @@ export default {
   async created() {
     const store = useStore();
     this.store = store;
+    console.log(store.state.visible);
     this.isStudent = store.state.isStudent;
     this.courseObjects = store.state.courseObjects;
     this.courseTitles = store.state.courseTitles;

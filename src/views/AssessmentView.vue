@@ -16,7 +16,7 @@
       <MarkAssessmentWindow @updateAnswers="updateAnswers" :questions="questions" :questionObjects="questionObjects"/>
     </div>
     <div>
-      <AssessmentSideBar @submit="submit" :name="name" :questions="questionsIndex"/>
+      <AssessmentSideBar @submit="submit" :name="name" :mark="true" :questions="questionsIndex"/>
     </div>
   </div>
 
